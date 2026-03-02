@@ -1,13 +1,19 @@
 import express from "express";
 import 'dotenv/config';
+import cors from "cors";
 
 import { PrismaClient } from "@prisma/client";
 import { PrismaMssql } from "@prisma/adapter-mssql";
 import { ReceiptCreateSchema } from "../prisma/generated/zod/index.js";
 
+const PORT = process.env.PORT || 3001;
 const adapter = new PrismaMssql(process.env.DATABASE_URL);
 const prisma = new PrismaClient({ adapter });
 const app = express();
+app.use(cors({
+  origin: process.env.NEXT_PUBLIC_API_BASE_URL,
+  credentials: true
+}));
 app.use(express.json());
 
 app.post("/receipts", async (req, res) => {
@@ -27,4 +33,4 @@ app.get("/receipts", async (_req, res) => {
   res.json(all);
 });
 
-app.listen(3000, () => console.log("Server running on port 3000"));
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
