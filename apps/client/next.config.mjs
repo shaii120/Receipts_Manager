@@ -10,6 +10,20 @@ const nextConfig = {
   turbopack: {
     root: path.resolve(__dirname, "../../"),
   },
+
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: `${process.env.NEXT_PUBLIC_API_BASE_URL}/:path*`,
+      },
+    ];
+  },
+
+  allowedDevOrigins: [
+    'http://192.168.32.141:3000',
+    '192.168.32.141',
+  ]
 };
 
 export default nextConfig;
