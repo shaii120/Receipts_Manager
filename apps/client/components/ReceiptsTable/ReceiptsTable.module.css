@@ -17,10 +17,21 @@
 }
 
 .form {
+  display: block;
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.fieldsRow {
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
   gap: 8px;
-  align-items: center;
+}
+
+.formField {
+  position: relative;
+  width: min-content;
 }
 
 .input {
@@ -45,6 +56,11 @@
 
 .error {
   color: red;
-  width: 100%;
+  margin-bottom: 4px;
   margin-top: 4px;
+}
+
+.rootError {
+  color: red;
+  margin-top: 3px;
 }
