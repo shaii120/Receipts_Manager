@@ -1,26 +1,28 @@
 import type { DMMF } from '@prisma/generator-helper';
 
-export function fieldsToZodObject(fields: DMMF.Field[]): string {
+export function fieldsToZodObject(fields: DMMF.Field[], isUpdate: boolean = false): string {
   return fields
-    .map(fieldToZod)
+    .map(field => fieldToZod(field, isUpdate))
     .join(',\n');
 }
 
-function fieldToZod(field: DMMF.Field): string {
+function fieldToZod(field: DMMF.Field, isUpdate: boolean = false): string {
   let zodType = prismaScalarToZod(field.type);
+  let name = field.name;
 
-  if (!field.isRequired) {
+  if (field.isList) {
+    zodType = `z.array(${zodType})`;
+    name += 'Id';
+  }
+
+  if (isUpdate || !field.isRequired) {
     zodType += '.nullable()';
   }
   else if (field.type == "String") {
     zodType += ".nonempty()"
   }
 
-  if (field.isList) {
-    zodType = `z.array(${zodType})`;
-  }
-
-  return `  ${field.name}: ${zodType}`;
+  return `  ${name}: ${zodType}`;
 }
 
 function prismaScalarToZod(type: string): string {
@@ -32,17 +34,5 @@ function prismaScalarToZod(type: string): string {
     case 'DateTime': return 'z.date()';
     case 'Json': return 'z.unknown()';
     default: return 'z.any()';
-  }
-}
-
-function prismaScalarToZodType(type: string): string {
-  switch (type) {
-    case 'String': return 'z.ZodString';
-    case 'Int': return 'z.ZodNumber';
-    case 'Float': return 'z.ZodNumber';
-    case 'Boolean': return 'z.ZodBoolean';
-    case 'DateTime': return 'z.ZodDate';
-    case 'Json': return 'z.ZodUnknown';
-    default: return 'z.ZodAny';
   }
 }

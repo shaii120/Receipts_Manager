@@ -3,23 +3,25 @@ import { fieldsToZodObject } from "./zod-mapper.js"
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-const schemaTypes = ['Model', 'Create']
+const schemaTypes = { Model: 'Model', Create: 'Create', Update: "Update" }
 
 function getFields(model: DMMF.Model): Map<string, DMMF.Field[]> {
-    const fields = new Map<string, DMMF.Field[]>();
-    fields.set('Model', model.fields
-        .filter(f => f.kind === 'scalar'));
-    fields.set('Create', model.fields
-        .filter(f => f.kind === 'scalar')
+    const fields = model.fields.filter(f => f.kind === 'scalar' || (f.kind === 'object' && f.isList));
+    const schemasFields = new Map<string, DMMF.Field[]>();
+    schemasFields.set(schemaTypes.Model, fields);
+    schemasFields.set(schemaTypes.Create, fields
         .filter(f => !f.hasDefaultValue && !f.isGenerated && !f.isUpdatedAt));
-    return fields;
+    schemasFields.set(schemaTypes.Update, fields
+        .filter(f => !f.isId));
+    return schemasFields;
 }
 
 function modelToSchemas(model: DMMF.Model): string {
     let code = 'import { z } from "zod";\n\n';
     getFields(model)
         .forEach((fields, type) => {
-            code += `export const ${model.name}${type}Schema = z.object({\n${fieldsToZodObject(fields)}\n});\n`;
+            const isUpdate = type === schemaTypes.Update;
+            code += `export const ${model.name}${type}Schema = z.object({\n${fieldsToZodObject(fields, isUpdate)}\n});\n`;
             code += `export type ${model.name}${type} = z.infer<typeof ${model.name}${type}Schema>;\n\n`;
         });
     return code.trim();
