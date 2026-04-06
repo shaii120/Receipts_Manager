@@ -1,4 +1,6 @@
 import { Request, Response, NextFunction } from "express";
+import { StatusCodes, ReasonPhrases } from "http-status-codes";
+
 import { AppError } from "../errors/app.error.js";
 
 export function errorMiddleware(err: any, _req: Request, res: Response, _next: NextFunction) {
@@ -7,5 +9,5 @@ export function errorMiddleware(err: any, _req: Request, res: Response, _next: N
     }
 
     console.error(err);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ error: ReasonPhrases.INTERNAL_SERVER_ERROR });
 }

@@ -1,17 +1,19 @@
 import { Request, Response, NextFunction } from 'express';
+import { StatusCodes, ReasonPhrases } from "http-status-codes";
+
 import { verifyToken } from "../lib/jwt.js";
 import { isUserInProject } from '../auth/auth.service.js';
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const token = req.cookies?.token;
-  if (!token) return res.status(401).send("Unauthorized");
+  if (!token) return res.status(StatusCodes.UNAUTHORIZED).send(ReasonPhrases.UNAUTHORIZED);
 
   try {
     const payload = verifyToken(token);
     req.user = { userId: payload.userId };
     next();
-  } catch {
-    return res.status(401).send("Invalid token");
+  } catch (error) {
+    return res.status(StatusCodes.UNAUTHORIZED).send("Invalid token");
   }
 }
 

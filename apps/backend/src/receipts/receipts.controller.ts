@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+
 import { createReceiptService, getReceiptsByProjectService, getReceiptsService } from "./receipts.service.js";
 import { ReceiptCreateSchema } from "@receipts/shared-schemas";
 import { ProjectRequest } from "../types/requests.js";
@@ -10,7 +12,7 @@ export async function createReceipt(req: Request, res: Response) {
         const receipt = await createReceiptService(data);
         res.json(receipt);
     } catch (err: any) {
-        res.status(400).json({ error: err.message });
+        res.status(StatusCodes.BAD_REQUEST).json({ error: err.message });
     }
 }
 

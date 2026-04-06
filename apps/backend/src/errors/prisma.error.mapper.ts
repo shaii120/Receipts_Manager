@@ -1,4 +1,6 @@
 import { Prisma } from "@prisma/client";
+import { StatusCodes } from "http-status-codes";
+
 import { ConflictError } from "./conflict.error.js";
 import { AppError } from "./app.error.js";
 
@@ -22,10 +24,10 @@ export function mapPrismaError(err: unknown): never {
         throw new ConflictError(field ? `${field} already exists` : "Resource already exists");
 
       case "P2025":
-        throw new AppError("Resource not found", 404);
+        throw new AppError("Resource not found", StatusCodes.NOT_FOUND);
 
       default:
-        throw new AppError("Database error", 500);
+        throw new AppError("Database error", StatusCodes.INTERNAL_SERVER_ERROR);
     }
   }
 

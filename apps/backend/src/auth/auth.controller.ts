@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { StatusCodes } from "http-status-codes";
+
 import { registerUser, loginUser, getUserById } from "./auth.service.js";
 import { signToken } from "../lib/jwt.js";
 import { RegisterSchema, LoginSchema } from "@receipts/shared-schemas/auth";
@@ -16,7 +18,7 @@ export async function login(req: Request, res: Response) {
   const { email, password } = data;
   const user = await loginUser(email, password);
 
-  if (!user) return res.status(401).send("Invalid credentials");
+  if (!user) return res.status(StatusCodes.UNAUTHORIZED).send("Invalid credentials");
 
   const token = signToken(user.id);
 
