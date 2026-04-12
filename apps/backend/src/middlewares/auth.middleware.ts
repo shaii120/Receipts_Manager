@@ -25,13 +25,13 @@ export async function projectAccessMiddleware(req: Request, res: Response, next:
     const { projectId } = req.params;
 
     if (!userId || !projectId || typeof projectId !== 'string') {
-      return res.status(400).json({ message: 'Missing userId or projectId' });
+      return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Missing userId or projectId' });
     }
 
     const relation = await isUserInProject(userId, projectId);
 
     if (!relation) {
-      return res.status(403).json({ message: 'Access denied' });
+      return res.status(StatusCodes.FORBIDDEN).json({ message: 'Access denied' });
     }
 
     next();
