@@ -13,6 +13,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     req.user = { userId: payload.userId };
     next();
   } catch (error) {
+    res.clearCookie("token");
     return res.status(StatusCodes.UNAUTHORIZED).send("Invalid token");
   }
 }
