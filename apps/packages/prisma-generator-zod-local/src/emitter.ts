@@ -3,7 +3,7 @@ import { fieldsToZodObject } from "./zod-mapper.js"
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-const schemaTypes = { Model: 'Model', Create: 'Create', Update: "Update" }
+const schemaTypes = { Model: 'Model', Create: 'Create', Update: 'Update', Result: 'Result' } as const;
 
 function getFields(model: DMMF.Model): Map<string, DMMF.Field[]> {
     const fields = model.fields.filter(f => f.kind === 'scalar' || (f.kind === 'object' && f.isList));
@@ -13,6 +13,8 @@ function getFields(model: DMMF.Model): Map<string, DMMF.Field[]> {
         .filter(f => !f.hasDefaultValue && !f.isGenerated && !f.isUpdatedAt));
     schemasFields.set(schemaTypes.Update, fields
         .filter(f => !f.isId));
+    schemasFields.set(schemaTypes.Result, fields
+        .filter(f => f.kind === 'scalar'));
     return schemasFields;
 }
 
