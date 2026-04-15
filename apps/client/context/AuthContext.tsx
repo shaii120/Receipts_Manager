@@ -13,6 +13,7 @@ type AuthContextType = {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  loadUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -21,12 +22,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    getMe().then((data) => {
+  async function handleLoadUser() {
+    try {
+      const data = await getMe();
       if (data) setUser(data);
+    } finally {
       setLoading(false);
-    });
-  }, []);
+    }
+  }
+
 
   async function handleLogin(email: string, password: string) {
     await login(email, password);
@@ -40,7 +44,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, login: handleLogin, logout: handleLogout }}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      login: handleLogin,
+      logout: handleLogout,
+      loadUser: handleLoadUser,
+    }}>
       {children}
     </AuthContext.Provider>
   );
