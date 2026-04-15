@@ -16,7 +16,7 @@ function fieldToZod(field: DMMF.Field, isUpdate: boolean = false): string {
   }
 
   if (isUpdate || !field.isRequired) {
-    zodType += '.nullable()';
+    zodType += '.nullish()';
   }
   else if (field.type == "String") {
     zodType += `.nonempty(\"${name} is required\")`;
