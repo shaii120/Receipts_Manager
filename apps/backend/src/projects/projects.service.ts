@@ -86,10 +86,6 @@ export async function getProjects(userId: string) {
             users: {
                 some: { userId }
             }
-        },
-        select: {
-            id: true,
-            name: true
         }
     }));
 }
