@@ -5,6 +5,7 @@
     "dev": "next dev",
     "dev:lan": "next dev -H 0.0.0.0",
     "build": "next build",
+    "full_build": "pnpm -F recipients-manager run build:client",
     "start": "next start",
     "clean": "rm -rf dist && rm -rf node_modules && rm -rf .next"
   },
