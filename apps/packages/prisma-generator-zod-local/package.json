@@ -7,8 +7,8 @@
     "prisma-generator-zod-local": "dist/bin.js"
   },
   "scripts": {
-    "clean": "rm -rf dist && rm -rf node_modules",
-    "build": "tsc",
+    "clean": "rm -rf dist && rm -rf node_modules && rm tsconfig.tsbuildinfo",
+    "build": "tsc -b",
     "watch": "tsc --watch",
     "prepare": "pnpm run build"
   },

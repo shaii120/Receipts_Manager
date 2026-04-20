@@ -10,8 +10,8 @@
         "./generated": "./dist/generated/index.js"
     },
     "scripts": {
-        "clean": "rm -rf dist && rm -rf node_modules",
-        "build": "tsc"
+        "clean": "rm -rf dist && rm -rf node_modules && rm tsconfig.tsbuildinfo",
+        "build": "tsc -b"
     },
     "dependencies": {
         "zod": "^4.3.6"

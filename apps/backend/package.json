@@ -8,6 +8,7 @@
     "clean": "rm -rf dist && rm -rf node_modules",
     "dev": "tsx watch src/server.ts",
     "prisma:generate": "prisma generate",
+    "prisma:zod:generate": "prisma generate --generator zod",
     "generator:build": "pnpm -F prisma-generator-zod-local run build",
     "generator:watch": "pnpm -F prisma-generator-zod-local run watch",
     "setup": "pnpm install && pnpm run prisma:generate"
