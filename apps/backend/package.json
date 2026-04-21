@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo",
-    "dev": "tsx watch src/server.ts",
+    "dev": "dotenv -e ../packages/prisma-my-db/.env -- tsx watch src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc -b",
     "build:setup": "pnpm -F @receipts/shared-schemas build && pnpm -F prisma-my-db run migrate:deploy && pnpm -F prisma-my-db run build",
@@ -36,6 +36,7 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
+    "dotenv-cli": "^11.0.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
     "typescript": "^6.0.3"

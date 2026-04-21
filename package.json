@@ -10,7 +10,7 @@
   "packageManager": "pnpm@10.31.0",
   "scripts": {
     "clean": "rm -rf node_modules pnpm-lock.yaml && pnpm -r run clean",
-    "setup": "pnpm -F prisma-generator-zod-local build && pnpm -F prisma-my-db run generate && pnpm -F @receipts/shared-schemas build",
+    "setup": "pnpm -F prisma-my-db run generate && pnpm -r build",
     "build:client": "pnpm run setup && pnpm -F client run build",
     "build:server": "pnpm run setup && pnpm -F prisma-my-db run build && pnpm -F backend run build"
   }
