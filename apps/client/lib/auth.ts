@@ -12,7 +12,7 @@ export async function login(email: string, password: string) {
 }
 
 export async function logout() {
-  return apiFetch("/api/auth/logout", {
+  return apiFetch<string>("/api/auth/logout", {
     method: "POST",
   });
 }

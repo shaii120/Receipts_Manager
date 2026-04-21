@@ -17,6 +17,9 @@ export async function apiFetch<T>(url: string, options?: RequestInit, router?: a
         throw new Error(message);
     }
 
-    const data = res.json();
-    return data;
+    if (res.headers.get("Content-Type")?.includes("application/json")) {
+        const data = res.json();
+        return data;
+    }
+    return res.text() as unknown as T;
 }
