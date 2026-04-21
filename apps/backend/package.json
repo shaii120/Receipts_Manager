@@ -8,7 +8,8 @@
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
     "build": "tsc -b",
-    "build:partial": "pnpm install && pnpm -F @receipts/shared-schemas build && pnpm run build",
+    "build:setup": "pnpm -F @receipts/shared-schemas build && pnpm -F prisma-my-db run migrate:deploy && pnpm -F prisma-my-db run build",
+    "build:partial": "pnpm install && pnpm run build:setup && pnpm run build",
     "build:full": "pnpm install && pnpm -F prisma-my-db run migrate:deploy && pnpm -F recipients-manager run build:server"
   },
   "keywords": [],
