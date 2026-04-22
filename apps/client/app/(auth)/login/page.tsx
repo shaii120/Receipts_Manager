@@ -16,7 +16,7 @@ export default function LoginPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(LoginSchema),
   });
@@ -47,7 +47,9 @@ export default function LoginPage() {
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
-        <button className={styles.button} type="submit">Login</button>
+        <button className={styles.button} type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Logging in..." : "Login"}
+        </button>
       </form>
       <p className={styles.link}>
         No account? <a href="/register">Register</a>

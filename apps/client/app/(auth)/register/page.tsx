@@ -25,7 +25,7 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(extendedSchema),
   });
@@ -75,7 +75,9 @@ export default function RegisterPage() {
         </div>
 
         {error && <p className={styles.error}>{error}</p>}
-        <button className={styles.button} type="submit">Register</button>
+        <button className={styles.button} type="submit" disabled={isSubmitting}>
+          {isSubmitting ? "Registering..." : "Register"}
+        </button>
       </form>
       <p className={styles.link}>
         Already have an account? <a href="/login">Login</a>
