@@ -29,7 +29,7 @@
             "path": "apps/packages/schemas"
         },
         {
-            "path": "apps/packages/prisma-db"
+            "path": "apps/packages/prisma-my-db"
         }
     ]
 }
