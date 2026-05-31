@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterSchema } from "@receipts/shared-schemas/auth";
+import { PasswordInput } from "@/components/Auth/PasswordInput";
 import styles from "@/components/Auth/auth.module.css";
 import { registerUser } from "@/lib/auth";
 
@@ -55,7 +56,7 @@ export default function RegisterPage() {
 
         <div className={styles.field}>
           <label className={styles.label}>Password</label>
-          <input className={styles.input} type="password" {...register("password")} />
+          <PasswordInput className={styles.input} {...register("password")} />
           <span className={styles.helper}>
             Choose a strong password (at least 6 characters)
           </span>
@@ -64,11 +65,7 @@ export default function RegisterPage() {
 
         <div className={styles.field}>
           <label className={styles.label}>Confirm Password</label>
-          <input
-            className={styles.input}
-            type="password"
-            {...register("confirmPassword")}
-          />
+          <PasswordInput className={styles.input} {...register("confirmPassword")} />
           {errors.confirmPassword && (
             <p className={styles.error}>{errors.confirmPassword.message}</p>
           )}

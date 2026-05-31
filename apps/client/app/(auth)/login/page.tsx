@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginSchema } from "@receipts/shared-schemas/auth";
+import { PasswordInput } from "@/components/Auth/PasswordInput";
 import styles from "@/components/Auth/auth.module.css";
 
 export default function LoginPage() {
@@ -42,7 +43,7 @@ export default function LoginPage() {
 
         <div className={styles.field}>
           <label className={styles.label}>Password</label>
-          <input className={styles.input} type="password" {...register("password")} />
+          <PasswordInput className={styles.input} {...register("password")} />
           {errors.password && <p className={styles.error}>{errors.password.message}</p>}
         </div>
 
