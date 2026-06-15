@@ -1,6 +1,7 @@
 "use client";
 
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { ReceiptCreateSchema, type ReceiptCreate } from "@receipts/shared-schemas";
@@ -15,7 +16,7 @@ type FormFieldProps = {
     register: any;
 };
 
-const FormField = ({ placeholder, type = "text", register, label, errors }: FormFieldProps & { errors: any }) => {
+function FormField({ placeholder, type = "text", register, label, errors }: FormFieldProps & { errors: any }) {
     const registerOptions = { valueAsNumber: type === "number" };
     const stepAttr = (type === "number") ? { step: "any" } : {};
 
@@ -36,7 +37,7 @@ const FormField = ({ placeholder, type = "text", register, label, errors }: Form
 };
 
 function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
-    const { selectedProjectId } = useProject();
+    const { selectedProjectId, projects } = useProject();
     const {
         register,
         handleSubmit,
@@ -47,7 +48,8 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
         resolver: zodResolver(ReceiptCreateSchema),
         defaultValues: { title: "", amount: 0, currency: "USD", vendor: null, projectId: selectedProjectId! },
     });
-    const onSubmit: SubmitHandler<ReceiptCreate> = async (data: ReceiptCreate) => {
+
+    async function onSubmit(data: ReceiptCreate) {
         try {
             await createReceipt(data);
 
@@ -65,7 +67,11 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
                 <FormField label="amount" placeholder="Amount" type="number" register={register} errors={errors} />
                 <FormField label="currency" placeholder="Currency" register={register} errors={errors} />
                 <FormField label="vendor" placeholder="Vendor (optional)" register={register} errors={errors} />
-                <input type="hidden" {...register("projectId")} />
+                <select className={styles.input} {...register("projectId")}>
+                    {projects.map(p => (
+                        <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
+                </select>
 
                 <button className={styles.button} disabled={isSubmitting} type="submit">
                     {isSubmitting ? "Adding..." : "Add Receipt"}

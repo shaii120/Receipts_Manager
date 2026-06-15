@@ -1,19 +1,40 @@
 'use client'
 
 import { createContext, useContext, useState } from 'react'
+import { getProjects } from '@/lib/projects'
 
 type ProjectContextType = {
     selectedProjectId: string | null
+    projects: any[]
     setSelectedProjectId: (id: string | null) => void
+    loadProjects: () => Promise<void>
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined)
 
 export function ProjectProvider({ children }: { children: React.ReactNode }) {
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+    const [projects, setProjects] = useState<any[]>([])
+
+    async function handleLoadProjects() {
+        try {
+            const data = await getProjects()
+            if (data) {
+                setProjects(data)
+            }
+        } catch (err) {
+            console.error(err)
+            setProjects([])
+        }
+    }
 
     return (
-        <ProjectContext.Provider value={{ selectedProjectId, setSelectedProjectId }}>
+        <ProjectContext.Provider value={{
+            selectedProjectId,
+            projects,
+            setSelectedProjectId,
+            loadProjects: handleLoadProjects
+        }}>
             {children}
         </ProjectContext.Provider>
     )

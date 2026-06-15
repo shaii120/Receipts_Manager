@@ -1,7 +1,37 @@
-.sidebar {
+.sidebarContainer {
+    display: flex;
+    flex-direction: row-reverse;
+    height: 100%;
+}
+
+.sidebarList {
     width: 250px;
+    max-width: 250px;
+
     border-right: 1px solid #e5e5e5;
     padding: 8px;
+
+    transition:
+        width 0.2s ease,
+        min-width 0.2s ease,
+        padding 0.2s ease;
+
+    overflow: hidden;
+}
+
+.collapsed {
+    display: none;
+}
+
+.toggleButton {
+    width: 30px;
+    height: 25px;
+    margin-bottom: 8px;
+    margin-top: 8px;
+    margin-right: 8px;
+    margin-left: 4px;
+
+    justify-content: center;
 }
 
 .item {
@@ -19,23 +49,9 @@
 
 .createButton {
     width: 100%;
-    padding: 8px;
     margin-bottom: 10px;
 
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-
-    cursor: pointer;
     font-size: 14px;
-}
-
-.createButton:hover {
-    background-color: #eaeaea;
 }
 
 .createButtonIcon {
@@ -50,4 +66,21 @@
 .icon {
     display: flex;
     align-items: center;
+}
+
+.button {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px;
+
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: #eaeaea;
 }

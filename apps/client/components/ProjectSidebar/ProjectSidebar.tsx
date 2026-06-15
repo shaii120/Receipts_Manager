@@ -7,9 +7,9 @@ import { createProject, getProjects } from '@/lib/projects'
 import { useProject } from '@/context/ProjectContext'
 
 export function ProjectSidebar() {
-    const [projects, setProjects] = useState<ProjectResult[]>([])
-    const { selectedProjectId, setSelectedProjectId } = useProject()
+    const { selectedProjectId, projects, setSelectedProjectId, loadProjects } = useProject()
     const [creating, setCreating] = useState(false)
+    const [isCollapsed, setIsCollapsed] = useState(false)
 
     function handleCreateProject() {
         const name = prompt('Project name')
@@ -19,11 +19,8 @@ export function ProjectSidebar() {
         setCreating(true)
 
         createProject(name)
-            .then((newProject) => {
-                setSelectedProjectId(newProject.id)
-                return getProjects()
-            })
-            .then(setProjects)
+            .then((newProject) => setSelectedProjectId(newProject.id))
+            .then(loadProjects)
             .catch(err => {
                 console.error(err)
                 alert('Failed to create project')
@@ -32,35 +29,47 @@ export function ProjectSidebar() {
     }
 
     useEffect(() => {
-        getProjects()
-            .then(setProjects)
-            .catch(err => {
-                console.error(err)
-                setProjects([])
-            })
+        loadProjects()
     }, [])
 
-    return (
-        <aside className={styles.sidebar}>
-            <button
-                onClick={handleCreateProject}
-                className={styles.createButton}
-            >
-                <svg className={styles.createButtonIcon} viewBox="0 0 24 24">
-                    <path d="M12 5v14M5 12h14" />
-                </svg>
+    const plusSign = `
+        M 12 5
+        v 14
+        M 5 12
+        h 14`
 
-                Add New Project
+    return (
+        <div className={styles.sidebarContainer}>
+            <button
+                type='button'
+                className={`${styles.button} ${styles.toggleButton}`}
+                onClick={() => setIsCollapsed(!isCollapsed)}
+            >
+                {isCollapsed ? '>' : '<'}
             </button>
-            {projects.map(p => (
-                <div
-                    key={p.id}
-                    onClick={() => setSelectedProjectId(p.id)}
-                    className={`${styles.item} ${selectedProjectId === p.id ? styles.active : ''}`}
+
+            <aside
+                className={isCollapsed ? styles.collapsed : styles.sidebarList} >
+                <button
+                    onClick={handleCreateProject}
+                    className={`${styles.button} ${styles.createButton}`}
                 >
-                    {p.name}
-                </div>
-            ))}
-        </aside>
+                    <svg className={styles.createButtonIcon} viewBox="0 0 24 24">
+                        <path d={plusSign} />
+                    </svg>
+
+                    Add New Project
+                </button>
+                {projects.map(p => (
+                    <div
+                        key={p.id}
+                        onClick={() => setSelectedProjectId(p.id)}
+                        className={`${styles.item} ${selectedProjectId === p.id ? styles.active : ''}`}
+                    >
+                        {p.name}
+                    </div>
+                ))}
+            </aside>
+        </div>
     )
 }
