@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ProjectProvider } from "@/context/ProjectContext";
-import UserHeader from "@/components/AuthButton/UserHeader";
+import UserHeader from "@/components/UserMenu/UserHeader";
 import styles from "./Layout.module.css";
 import { ProjectSidebar } from "@/components/ProjectSidebar/ProjectSidebar";
 
