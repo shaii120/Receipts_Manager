@@ -29,6 +29,12 @@
   gap: 8px;
 }
 
+@media (max-width: 768px) {
+  .fieldsRow {
+    flex-direction: column;
+  }
+}
+
 .formField {
   position: relative;
   width: min-content;
@@ -38,6 +44,7 @@
   padding: 6px 8px;
   border: 1px solid #ccc;
   border-radius: 4px;
+  min-width: 120px;
 }
 
 .button {

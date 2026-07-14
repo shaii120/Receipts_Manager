@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import LogoutButton from "./UserMenu"
+import UserMenu from "./UserMenu"
 
 export default function UserHeader() {
   const { user, loading } = useAuth();
@@ -10,5 +10,5 @@ export default function UserHeader() {
 
   if (!user) return null;
 
-  return <LogoutButton />;
+  return <UserMenu />;
 }

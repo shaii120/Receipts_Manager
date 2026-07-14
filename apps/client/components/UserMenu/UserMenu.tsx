@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import styles from "./UserMenu.module.css";
 
-export default function LogoutButton() {
+export default function UserMenu() {
   const { logout, user } = useAuth();
   const router = useRouter();
 
