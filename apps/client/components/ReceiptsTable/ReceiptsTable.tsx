@@ -27,6 +27,7 @@ export default function ReceiptsTable() {
                     <th className={styles.cell}>Amount</th>
                     <th className={styles.cell}>Currency</th>
                     <th className={styles.cell}>Vendor</th>
+                    <th className={styles.cell}>Created At</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,6 +37,7 @@ export default function ReceiptsTable() {
                         <td className={styles.cell}>{rec.amount}</td>
                         <td className={styles.cell}>{rec.currency}</td>
                         <td className={styles.cell}>{rec.vendor || "-"}</td>
+                        <td className={styles.cell}>{new Date(rec.createdAt).toLocaleDateString()}</td>
                     </tr>
                 ))}
             </tbody>

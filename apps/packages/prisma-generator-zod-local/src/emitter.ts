@@ -24,7 +24,10 @@ function modelToSchemas(model: DMMF.Model): string {
         .forEach((fields, type) => {
             const isUpdate = type === schemaTypes.Update;
             code += `export const ${model.name}${type}Schema = z.object({\n${fieldsToZodObject(fields, isUpdate)}\n});\n`;
-            code += `export type ${model.name}${type} = z.infer<typeof ${model.name}${type}Schema>;\n\n`;
+            code += `export type ${model.name}${type} = z.infer<typeof ${model.name}${type}Schema>;\n`;
+            if (fields.filter(f => f.type === 'DateTime').length > 0)
+                code += `export type ${model.name}${type}Input = z.input<typeof ${model.name}${type}Schema>;\n`;
+            code += '\n';
         });
     return code.trim();
 }

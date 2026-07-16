@@ -1,10 +1,10 @@
 "use client";
 
-import { SubmitHandler, useForm } from "react-hook-form";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { ReceiptCreateSchema, type ReceiptCreate } from "@receipts/shared-schemas";
+import { ReceiptCreateSchema } from "@receipts/shared-schemas";
+import type { ReceiptCreate, ReceiptCreateInput } from "@receipts/shared-schemas";
 import { createReceipt } from "@/lib/receipts"
 import { useProject } from "@/context/ProjectContext";
 import styles from "./ReceiptsTable.module.css";
@@ -14,10 +14,13 @@ type FormFieldProps = {
     placeholder: string;
     type?: string;
     register: any;
+    optional?: any;
 };
 
-function FormField({ placeholder, type = "text", register, label, errors }: FormFieldProps & { errors: any }) {
-    const registerOptions = { valueAsNumber: type === "number" };
+function FormField({ placeholder, type = "text", register, label, errors, optional = {} }: FormFieldProps & { errors: any }) {
+    const registerOptions = new Map<string, any>([
+        ["number", { valueAsNumber: true }]
+    ]);
     const stepAttr = (type === "number") ? { step: "any" } : {};
 
     return (
@@ -27,7 +30,8 @@ function FormField({ placeholder, type = "text", register, label, errors }: Form
                 placeholder={placeholder}
                 type={type}
                 {...stepAttr}
-                {...register(label, registerOptions)}
+                {...register(label, registerOptions.get(type))}
+                {...optional}
             />
             <div className={styles.error}>
                 {errors[label] ? String(errors[label]?.message) : ''}
@@ -44,9 +48,16 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
         reset,
         formState: { errors, isSubmitting },
         setError
-    } = useForm<ReceiptCreate>({
+    } = useForm<ReceiptCreateInput, any, ReceiptCreate>({
         resolver: zodResolver(ReceiptCreateSchema),
-        defaultValues: { title: "", amount: 0, currency: "USD", vendor: null, projectId: selectedProjectId! },
+        defaultValues: {
+            title: "",
+            amount: 0,
+            currency: "USD",
+            vendor: null,
+            projectId: selectedProjectId!,
+            createdAt: new Date().toISOString().split('T')[0]
+        },
     });
 
     async function onSubmit(data: ReceiptCreate) {
@@ -67,6 +78,7 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
                 <FormField label="amount" placeholder="Amount" type="number" register={register} errors={errors} />
                 <FormField label="currency" placeholder="Currency" register={register} errors={errors} />
                 <FormField label="vendor" placeholder="Vendor (optional)" register={register} errors={errors} />
+                <FormField label="createdAt" placeholder="Created At" type="date" register={register} errors={errors} />
                 <select className={styles.input} {...register("projectId")}>
                     {projects.map(p => (
                         <option key={p.id} value={p.id}>{p.name}</option>
@@ -79,10 +91,12 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
             </div>
 
 
-            {Object.keys(errors).some(k => k !== "root") && (
-                <div className={styles.rootError}>Please check all fields</div>
-            )}
-        </form>
+            {
+                Object.keys(errors).some(k => k !== "root") && (
+                    <div className={styles.rootError}>Please check all fields</div>
+                )
+            }
+        </form >
     );
 }
 

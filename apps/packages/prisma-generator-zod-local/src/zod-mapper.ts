@@ -31,7 +31,7 @@ function prismaScalarToZod(type: string, name: string): string {
     case 'Int': return 'z.number().int()';
     case 'Float': return `z.number(\"${name} should be a number\")`;
     case 'Boolean': return 'z.boolean()';
-    case 'DateTime': return 'z.date()';
+    case 'DateTime': return 'z.string().pipe(z.coerce.date())';
     case 'Json': return 'z.unknown()';
     default: return 'z.any()';
   }
