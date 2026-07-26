@@ -1,28 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+
 import { type ReceiptModel } from "@receipts/shared-schemas";
-import { getReceipts } from "@/lib/receipts";
+import { deleteReceipt, getReceipts } from "@/lib/receipts";
 import styles from "./ReceiptsTable.module.css";
 import { useProject } from "@/context/ProjectContext";
+import ReceiptRow from "@/components/Row/ReceiptRow";
+import ReceiptEditRow from "../Row/ReceiptEditRow";
 
 export default function ReceiptsTable() {
     const [receipts, setReceipts] = useState<ReceiptModel[]>([]);
+    const [editingReceiptId, setEditingReceiptId] = useState<string | null>(null);
     const router = useRouter();
     const { selectedProjectId } = useProject()
+    const reloadReceipts = useCallback(async () => {
+        if (!selectedProjectId) {
+            setReceipts([]);
+            return;
+        }
+
+        getReceipts(selectedProjectId, router)
+            .then(setReceipts)
+            .catch(console.error);
+    }, [selectedProjectId, router]);
+
+    async function handleDelete(receiptId: string) {
+        if (!confirm("Delete this receipt?")) {
+            return;
+        }
+
+        await deleteReceipt(receiptId);
+        await reloadReceipts();
+    }
 
     useEffect(() => {
-        if (selectedProjectId) {
-            getReceipts(selectedProjectId, router)
-                .then((data) => setReceipts(data))
-                .catch(console.error);
-        }
-    }, [selectedProjectId]);
+        reloadReceipts();
+    }, [reloadReceipts]);
+
     return (
         <table className={styles.table}>
             <thead>
                 <tr className={styles.header}>
+                    <th className={styles.cell}></th>
                     <th className={styles.cell}>Title</th>
                     <th className={styles.cell}>Amount</th>
                     <th className={styles.cell}>Currency</th>
@@ -31,14 +52,23 @@ export default function ReceiptsTable() {
                 </tr>
             </thead>
             <tbody>
-                {receipts.map((rec) => (
-                    <tr key={rec.id} className={styles.row}>
-                        <td className={styles.cell}>{rec.title}</td>
-                        <td className={styles.cell}>{rec.amount}</td>
-                        <td className={styles.cell}>{rec.currency}</td>
-                        <td className={styles.cell}>{rec.vendor || "-"}</td>
-                        <td className={styles.cell}>{new Date(rec.createdAt).toLocaleDateString()}</td>
-                    </tr>
+                {receipts.map((rec) => editingReceiptId === rec.id ? (
+                    <ReceiptEditRow
+                        key={rec.id}
+                        receipt={rec}
+                        onSaved={async () => {
+                            setEditingReceiptId(null);
+                            await reloadReceipts();
+                        }}
+                        onCancel={() => setEditingReceiptId(null)}
+                    />
+                ) : (
+                    <ReceiptRow
+                        key={rec.id}
+                        receipt={rec}
+                        onEdit={setEditingReceiptId}
+                        onDelete={handleDelete}
+                    />
                 ))}
             </tbody>
         </table>

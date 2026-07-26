@@ -1,0 +1,37 @@
+.row {
+    /* border-bottom: 1px solid #ddd; */
+    transition: background-color 0.15s;
+}
+
+.row:hover {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    background-color: #f8f8f8;
+}
+
+.actionsCell {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.actions {
+    display: flex;
+    gap: 4px;
+
+    opacity: 0;
+    pointer-events: none;
+
+    transition: opacity .15s;
+}
+
+.row:hover .actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.iconButton {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 2px 4px;
+}
