@@ -7,3 +7,9 @@ export async function dbExecute<T>(operation: () => Promise<T>): Promise<T> {
     mapPrismaError(err);
   }
 }
+
+export function removeUndefinedProperties<T extends object>(obj: T): any {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([_, v]) => v !== undefined)
+  )
+}

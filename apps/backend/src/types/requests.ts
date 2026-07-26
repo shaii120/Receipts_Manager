@@ -5,3 +5,9 @@ export interface ProjectRequest extends Request {
         projectId: string;
     };
 }
+
+export interface ReceiptRequest extends Request {
+    params: {
+        receiptId: string;
+    };
+}

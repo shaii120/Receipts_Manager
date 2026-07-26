@@ -31,6 +31,17 @@ export async function getUserById(userId: string): Promise<UserPublic | null> {
   );
 }
 
+export async function getProjectIdFromReceipt(receiptId: string): Promise<string | null> {
+  const receipt = await dbExecute(() =>
+    prisma.receipt.findUnique({
+      where: { id: receiptId },
+      select: { projectId: true }
+    })
+  );
+
+  return receipt?.projectId || null;
+}
+
 export async function isUserInProject(userId: string, projectId: string): Promise<boolean> {
   const relation = await dbExecute(() =>
     prisma.userProject.findUnique({

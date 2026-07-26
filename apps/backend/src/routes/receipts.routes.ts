@@ -14,5 +14,17 @@ router.get(
     getReceiptsByProject
 );
 router.post("/", createReceipt);
+router.put(
+    "/:receiptId",
+    paramCheckMiddleware('receiptId'),
+    receiptAccessMiddleware,
+    updateReceipt
+);
+router.delete(
+    "/:receiptId",
+    paramCheckMiddleware('receiptId'),
+    receiptAccessMiddleware,
+    deleteReceipt
+);
 
 export default router;
