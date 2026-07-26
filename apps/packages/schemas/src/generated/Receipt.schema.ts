@@ -28,8 +28,7 @@ export const ReceiptUpdateSchema = z.object({
   amount: z.number("amount should be a number").nullish(),
   currency: z.string().nullish(),
   vendor: z.string().nullish(),
-  createdAt: z.string().pipe(z.coerce.date()).nullish(),
-  projectId: z.string().nullish()
+  createdAt: z.string().pipe(z.coerce.date()).nullish()
 });
 export type ReceiptUpdate = z.infer<typeof ReceiptUpdateSchema>;
 export type ReceiptUpdateInput = z.input<typeof ReceiptUpdateSchema>;

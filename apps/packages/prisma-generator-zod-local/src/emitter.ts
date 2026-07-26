@@ -6,13 +6,14 @@ import { join } from 'node:path'
 const schemaTypes = { Model: 'Model', Create: 'Create', Update: 'Update', Result: 'Result' } as const;
 
 function getFields(model: DMMF.Model): Map<string, DMMF.Field[]> {
-    const fields = model.fields.filter(f => f.kind === 'scalar' || (f.kind === 'object' && f.isList));
+    const fields = model.fields
+        .filter(f => f.kind === 'scalar' || (f.kind === 'object' && f.isList));
     const schemasFields = new Map<string, DMMF.Field[]>();
     schemasFields.set(schemaTypes.Model, fields);
     schemasFields.set(schemaTypes.Create, fields
         .filter(f => !f.hasDefaultValue && !f.isGenerated && !f.isUpdatedAt));
     schemasFields.set(schemaTypes.Update, fields
-        .filter(f => !f.isId));
+        .filter(f => !f.isId && !f.isReadOnly));
     schemasFields.set(schemaTypes.Result, fields
         .filter(f => f.kind === 'scalar'));
     return schemasFields;
@@ -22,6 +23,7 @@ function modelToSchemas(model: DMMF.Model): string {
     let code = 'import { z } from "zod";\n\n';
     getFields(model)
         .forEach((fields, type) => {
+            if (fields.length === 0) return;
             const isUpdate = type === schemaTypes.Update;
             code += `export const ${model.name}${type}Schema = z.object({\n${fieldsToZodObject(fields, isUpdate)}\n});\n`;
             code += `export type ${model.name}${type} = z.infer<typeof ${model.name}${type}Schema>;\n`;

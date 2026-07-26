@@ -12,12 +12,6 @@ export const UserProjectCreateSchema = z.object({
 });
 export type UserProjectCreate = z.infer<typeof UserProjectCreateSchema>;
 
-export const UserProjectUpdateSchema = z.object({
-  userId: z.string().nullish(),
-  projectId: z.string().nullish()
-});
-export type UserProjectUpdate = z.infer<typeof UserProjectUpdateSchema>;
-
 export const UserProjectResultSchema = z.object({
   userId: z.string().nonempty("userId is required"),
   projectId: z.string().nonempty("projectId is required")
