@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { StatusCodes, ReasonPhrases } from "http-status-codes";
 
 import { verifyToken } from "../lib/jwt.js";
-import { isUserInProject } from '../auth/auth.service.js';
+import { isUserInProject, getProjectIdFromReceipt } from '../auth/auth.service.js';
+import { ProjectRequest, ReceiptRequest } from '../types/requests.js';
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const token = req.cookies?.token;
@@ -19,17 +20,12 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 }
 
 
-export async function projectAccessMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function projectAccessMiddleware(req: ProjectRequest, res: Response, next: NextFunction) {
   try {
-    const userId = req.user?.userId;
+    const userId = req.user!.userId;
     const { projectId } = req.params;
 
-    if (!userId || !projectId || typeof projectId !== 'string') {
-      return res.status(StatusCodes.BAD_REQUEST).json({ message: 'Missing userId or projectId' });
-    }
-
     const relation = await isUserInProject(userId, projectId);
-
     if (!relation) {
       return res.status(StatusCodes.FORBIDDEN).json({ message: 'Access denied' });
     }
