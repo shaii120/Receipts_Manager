@@ -1,11 +1,12 @@
 'use client'
 
 import { createContext, useContext, useState } from 'react'
+import type { ProjectResult } from '@receipts/shared-schemas/generated';
 import { getProjects } from '@/lib/projects'
 
 type ProjectContextType = {
     selectedProjectId: string | null
-    projects: any[]
+    projects: ProjectResult[]
     setSelectedProjectId: (id: string | null) => void
     loadProjects: () => Promise<void>
 }
@@ -14,7 +15,7 @@ const ProjectContext = createContext<ProjectContextType | undefined>(undefined)
 
 export function ProjectProvider({ children }: { children: React.ReactNode }) {
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
-    const [projects, setProjects] = useState<any[]>([])
+    const [projects, setProjects] = useState<ProjectResult[]>([])
 
     async function handleLoadProjects() {
         try {
