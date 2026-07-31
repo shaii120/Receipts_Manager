@@ -7,6 +7,7 @@ import { errorMiddleware } from "./middlewares/error.middleware.js";
 import authRoutes from "./routes/auth.routes.js";
 import receiptsRoutes from "./routes/receipts.routes.js";
 import projectsRoutes from "./routes/projects.routes.js";
+import currenciesRoutes from "./routes/currencies.routes.js";
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -22,6 +23,7 @@ app.use(cookieParser());
 app.use("/auth", authRoutes);
 app.use("/receipts", receiptsRoutes);
 app.use("/projects", projectsRoutes);
+app.use("/currencies", currenciesRoutes);
 // Error handling middleware
 app.use(errorMiddleware);
 
