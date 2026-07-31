@@ -4,6 +4,7 @@ import { useEffect } from "react";
 
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ProjectProvider } from "@/context/ProjectContext";
+import { CurrencyProvider } from "@/context/CurrencyContext"
 import UserHeader from "@/components/UserMenu/UserHeader";
 import styles from "./Layout.module.css";
 import { ProjectSidebar } from "@/components/ProjectSidebar/ProjectSidebar";
@@ -33,7 +34,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (
         <AuthProvider>
             <ProjectProvider>
-                <AppShell>{children}</AppShell>
+                <CurrencyProvider>
+                    <AppShell>{children}</AppShell>
+                </CurrencyProvider>
             </ProjectProvider>
         </AuthProvider>
     );
