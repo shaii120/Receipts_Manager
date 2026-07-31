@@ -1,0 +1,45 @@
+.comboBox {
+    position: relative;
+}
+
+.input {
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    min-width: 120px;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #0070f3;
+}
+
+.popover {
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 4px;
+    overflow: hidden;
+    max-height: 250px;
+    overflow-y: auto;
+    direction: ltr;
+}
+
+.listBox {
+    margin: 0;
+    padding: 4px 0;
+    list-style: none;
+}
+
+.item {
+    padding: 6px 8px;
+    cursor: pointer;
+}
+
+.item[data-focused] {
+    background-color: #f0f0f0;
+}
+
+.item[data-selected] {
+    font-weight: bold;
+}

@@ -17,6 +17,7 @@
     "http-status-codes": "^2.3.0",
     "next": "latest",
     "react": "latest",
+    "react-aria-components": "^1.19.0",
     "react-dom": "latest",
     "react-hook-form": "^7.71.2",
     "zod": "^4.3.6"
