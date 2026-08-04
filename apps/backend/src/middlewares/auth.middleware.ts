@@ -46,7 +46,6 @@ export async function receiptAccessMiddleware(req: ReceiptRequest, res: Response
     if (!projectId) {
       return res.status(StatusCodes.NOT_FOUND).json({ message: 'Receipt not found' });
     }
-    console.log(`Project ID for receipt ${receiptId}: ${projectId}`);
 
     const relation = await isUserInProject(userId, projectId);
     if (!relation) {
