@@ -15,7 +15,7 @@ export async function getReceiptsByProjectService(projectId: string): Promise<Re
         projectId: projectId
       },
       orderBy: {
-        createdAt: 'desc'
+        boughtAt: 'desc'
       }
     })
   );

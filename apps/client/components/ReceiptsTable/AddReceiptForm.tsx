@@ -60,7 +60,7 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
             currency: "USD",
             vendor: null,
             projectId: selectedProjectId!,
-            createdAt: new Date().toISOString().split('T')[0]
+            boughtAt: new Date().toISOString().split('T')[0]
         },
     });
 
@@ -86,7 +86,7 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
                     control={control}
                 />
                 <FormField label="vendor" placeholder="Vendor (optional)" register={register} errors={errors} />
-                <FormField label="createdAt" placeholder="Created At" type="date" register={register} errors={errors} />
+                <FormField label="boughtAt" placeholder="Bought At" type="date" register={register} errors={errors} />
                 <select className={styles.input} {...register("projectId")}>
                     {projects.map(p => (
                         <option key={p.id} value={p.id}>{p.name}</option>

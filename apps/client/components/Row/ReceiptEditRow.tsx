@@ -36,7 +36,7 @@ export default function ReceiptEditRow({
             amount: receipt.amount,
             currency: receipt.currency,
             vendor: receipt.vendor,
-            createdAt: new Date(receipt.createdAt)
+            boughtAt: new Date(receipt.boughtAt)
                 .toISOString()
                 .split("T")[0],
             projectId: receipt.projectId,
@@ -112,7 +112,7 @@ export default function ReceiptEditRow({
                 <input
                     className={styles.input}
                     type="date"
-                    {...register("createdAt")}
+                    {...register("boughtAt")}
                 />
             </td>
         </tr>

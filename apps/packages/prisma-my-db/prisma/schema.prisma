@@ -13,12 +13,12 @@ generator zod {
 }
 
 model Receipt {
-  id        String   @id @default(uuid())
-  title     String
-  amount    Float
-  currency  String
-  vendor    String?
-  createdAt DateTime
+  id       String   @id @default(uuid())
+  title    String
+  amount   Float
+  currency String
+  vendor   String?
+  boughtAt DateTime
 
   projectId String
   project   Project @relation(fields: [projectId], references: [id])
@@ -32,10 +32,18 @@ model User {
   projects UserProject[]
 }
 
+enum ProjectRole {
+  OWNER
+  EDITOR
+  VIEWER
+}
+
 model Project {
-  id          String  @id @default(uuid())
-  name        String
-  description String?
+  id              String  @id @default(uuid())
+  name            String
+  description     String?
+  primaryCurrency String
+  totalAmount     Decimal @default(0)
 
   receipts Receipt[]
   users    UserProject[]
@@ -44,6 +52,7 @@ model Project {
 model UserProject {
   userId    String
   projectId String
+  role      ProjectRole
 
   user    User    @relation(fields: [userId], references: [id])
   project Project @relation(fields: [projectId], references: [id])

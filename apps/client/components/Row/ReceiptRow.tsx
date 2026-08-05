@@ -41,7 +41,7 @@ export default function ReceiptRow({
             <td className={styles.cell}>{receipt.currency}</td>
             <td className={styles.cell}>{receipt.vendor ?? "-"}</td>
             <td className={styles.cell}>
-                {new Date(receipt.createdAt).toLocaleDateString()}
+                {new Date(receipt.boughtAt).toLocaleDateString()}
             </td>
         </tr>
     );
