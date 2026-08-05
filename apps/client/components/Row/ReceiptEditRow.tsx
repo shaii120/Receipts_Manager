@@ -1,17 +1,16 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import {
-    ReceiptCreateSchema,
-    type ReceiptCreate,
-    type ReceiptCreateInput,
-    type ReceiptModel,
+import { ReceiptCreateSchema } from "@receipts/shared-schemas";
+import type {
+    ReceiptCreate,
+    ReceiptCreateInput,
+    ReceiptModel
 } from "@receipts/shared-schemas";
 import { updateReceipt } from "@/lib/receipts";
-import AutoComplete from "@/components/AutoCompleteInput/AutoComplete"
-import { useCurrencies } from "@/context/CurrencyContext"
+import CurrencyField from "@/components/CurrencyField/CurrencyField";
 import styles from "./ReceiptRow.module.css";
 
 type ReceiptEditRowProps = {
@@ -96,20 +95,9 @@ export default function ReceiptEditRow({
             </td>
 
             <td className={styles.cell}>
-                <Controller
+                <CurrencyField
                     name="currency"
                     control={control}
-                    render={({ field }) => (
-                        <AutoComplete
-                            name="Currency"
-                            items={useCurrencies()}
-                            value={field.value}
-                            onChange={field.onChange}
-                            getKey={(currnecy) => currnecy.code}
-                            getValue={(currnecy) => currnecy.name}
-                            getSearchText={(currency) => `${currency.code} - ${currency.name}`}
-                        />
-                    )}
                 />
             </td>
 

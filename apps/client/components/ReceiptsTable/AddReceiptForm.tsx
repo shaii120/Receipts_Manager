@@ -1,14 +1,13 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { ReceiptCreateSchema } from "@receipts/shared-schemas";
 import type { ReceiptCreate, ReceiptCreateInput } from "@receipts/shared-schemas";
 import { createReceipt } from "@/lib/receipts"
 import { useProject } from "@/context/ProjectContext";
-import { useCurrencies } from "@/context/CurrencyContext"
-import AutoComplete from "@/components/AutoCompleteInput/AutoComplete";
+import CurrencyField from "@/components/CurrencyField/CurrencyField";
 import styles from "./ReceiptsTable.module.css";
 
 
@@ -82,20 +81,9 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
             <div className={styles.fieldsRow}>
                 <FormField label="title" placeholder="Title" register={register} errors={errors} />
                 <FormField label="amount" placeholder="Amount" type="number" register={register} errors={errors} />
-                <Controller
+                <CurrencyField
                     name="currency"
                     control={control}
-                    render={({ field }) => (
-                        <AutoComplete
-                            name="Currency"
-                            items={useCurrencies()}
-                            value={field.value}
-                            onChange={field.onChange}
-                            getKey={(currnecy) => currnecy.code}
-                            getValue={(currnecy) => currnecy.name}
-                            getSearchText={(currency) => `${currency.code} - ${currency.name}`}
-                        />
-                    )}
                 />
                 <FormField label="vendor" placeholder="Vendor (optional)" register={register} errors={errors} />
                 <FormField label="createdAt" placeholder="Created At" type="date" register={register} errors={errors} />
