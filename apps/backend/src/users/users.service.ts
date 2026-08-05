@@ -4,10 +4,31 @@ import { dbExecute } from "../lib/db.js";
 import { userPublicSelect } from "./users.types.js";
 
 export async function getUserById(userId: string): Promise<UserPublic | null> {
-  return dbExecute(() =>
-    prisma.user.findUnique({
-      where: { id: userId },
-      select: userPublicSelect
-    })
-  );
+    return dbExecute(() =>
+        prisma.user.findUnique({
+            where: { id: userId },
+            select: userPublicSelect
+        })
+    );
+}
+
+export async function searchUsers(
+    currentUserId: string,
+    email: string
+): Promise<UserPublic[]> {
+    return dbExecute(() =>
+        prisma.user.findMany({
+            where: {
+                id: {
+                    not: currentUserId
+                },
+                email: {
+                    startsWith: email,
+                    mode: "insensitive"
+                }
+            },
+            select: userPublicSelect,
+            take: 10
+        })
+    );
 }

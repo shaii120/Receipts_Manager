@@ -8,6 +8,7 @@ import authRoutes from "./routes/auth.routes.js";
 import receiptsRoutes from "./routes/receipts.routes.js";
 import projectsRoutes from "./routes/projects.routes.js";
 import currenciesRoutes from "./routes/currencies.routes.js";
+import usersRoutes from "./routes/users.routes.js";
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -24,6 +25,7 @@ app.use("/auth", authRoutes);
 app.use("/receipts", receiptsRoutes);
 app.use("/projects", projectsRoutes);
 app.use("/currencies", currenciesRoutes);
+app.use("/users", usersRoutes);
 // Error handling middleware
 app.use(errorMiddleware);
 
