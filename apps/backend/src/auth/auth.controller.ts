@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-import { registerUser, loginUser, getUserById } from "./auth.service.js";
+import { registerUser, loginUser } from "./auth.service.js";
+import { getUserById } from "../users/users.service.js";
 import { signToken } from "../lib/jwt.js";
 import { RegisterSchema, LoginSchema, UserPublic } from "@receipts/shared-schemas/auth";
 
