@@ -1,6 +1,6 @@
 import { GeneratorOptions } from '@prisma/generator-helper';
 import { mkdir } from 'node:fs/promises';
-import { emitIndex, emitSchema } from './emitter.js'
+import { emitEnums, emitIndex, emitSchema } from './emitter.js'
 
 export async function generate(options: GeneratorOptions) {
   const modelNames: string[] = []
@@ -16,6 +16,7 @@ export async function generate(options: GeneratorOptions) {
     modelNames.push(model.name)
   }
 
-  emitIndex(outDir, modelNames);
+  emitIndex(outDir, modelNames, options.dmmf.datamodel.enums.length > 0);
+  emitEnums(outDir, options.dmmf.datamodel.enums);
 }
 
