@@ -1,0 +1,19 @@
+.userList {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+    margin-top: 0.5rem;
+}
+
+.userRow {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+}
+
+.userRow+.userRow {
+    border-top: 1px solid #eee;
+}
