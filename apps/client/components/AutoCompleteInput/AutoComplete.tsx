@@ -18,56 +18,71 @@ type ComboBoxProps<T> = {
     value?: Key | null;
     onChange: (value: Key | null) => void;
 
+    inputValue?: string;
+    onInputChange?: (value: string) => void;
+
     getKey: (item: T) => Key;
     getValue: (item: T) => string;
+    getDisplayValue?: (item: T) => string;
     getSearchText?: (item: T) => string;
 
     name?: string;
 };
 
-export default function ComboBox<T>({
-    items,
-    value,
-    name,
-    onChange,
-    getKey,
-    getValue,
-    getSearchText = getValue
-}: ComboBoxProps<T>) {
-    const [inputValue, setInputValue] = useState("");
-    const filteredItems = items.filter(item =>
+export default function ComboBox<T>(props: ComboBoxProps<T>) {
+    const [internalInputValue, setInternalInputValue] = useState("");
+    const currentInputValue = props.inputValue ?? internalInputValue;
+    const updateInputValue = props.onInputChange ?? setInternalInputValue;
+    const getDisplayValue = props.getDisplayValue ?? props.getValue;
+    const getSearchText = props.getSearchText ?? props.getValue;
+
+    const filteredItems = props.items.filter(item =>
         getSearchText(item)
             .toLowerCase()
-            .includes(inputValue.toLowerCase())
+            .includes(currentInputValue.toLowerCase())
     );
 
     function handleValueChange(newValue: Key | null) {
-        setInputValue(String(newValue));
-        onChange(newValue);
+        const item = props.items.find(item => props.getKey(item) === newValue);
+
+        if (item) {
+            updateInputValue(getDisplayValue(item));
+        } else {
+            updateInputValue("");
+        }
+
+        props.onChange(newValue);
     }
 
     useEffect(() => {
-        setInputValue(String(value))
-    }, [items, value, getKey, getValue]);
+        if (!props.value) {
+            updateInputValue("");
+        }
+        else {
+            const item = props.items.find(item => props.getKey(item) === props.value);
+            updateInputValue(item ? getDisplayValue(item) : "");
+        }
+    }, [props.value]);
 
     return (
         <AriaComboBox
             items={filteredItems}
-            value={value}
-            inputValue={inputValue}
-            onInputChange={setInputValue}
+            value={props.value}
+            inputValue={currentInputValue}
+            onInputChange={updateInputValue}
             onChange={handleValueChange}
-            aria-label={name}
+            aria-label={props.name}
             className={styles.comboBox}
+            allowsEmptyCollection
         >
 
-            <Input placeholder={name} className={styles.input} />
+            <Input placeholder={props.name} className={styles.input} />
 
             <Popover className={styles.popover}>
                 <ListBox className={styles.listBox}>
                     {(item: T) => (
                         <ListBoxItem
-                            id={getKey(item)}
+                            id={props.getKey(item)}
                             className={styles.item}
                         >
                             {getSearchText(item)}

@@ -42,6 +42,7 @@ export default function CurrencyField<
                     getSearchText={(currency) =>
                         `${currency.code} - ${currency.name}`
                     }
+                    getDisplayValue={(currency) => currency.code}
                 />
             )}
         />
