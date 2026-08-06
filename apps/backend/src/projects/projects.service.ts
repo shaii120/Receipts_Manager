@@ -1,16 +1,20 @@
 import { prisma } from 'prisma-my-db/connector';
-import { ProjectUpdate, ProjectCreate } from "@receipts/shared-schemas/generated";
+import { ProjectUpdate } from "@receipts/shared-schemas/generated";
+import { ProjectCreateForm } from "@receipts/shared-schemas/project";
 import { dbExecute } from "../lib/db.js";
 
-export async function createProject(creatorId: string, projectData: ProjectCreate) {
+export async function createProject(creatorId: string, projectData: ProjectCreateForm) {
     return dbExecute(() => prisma.project.create({
         data: {
             name: projectData.name.trim(),
             description: projectData.description ?? null,
+            primaryCurrency: projectData.primaryCurrency,
             users: {
-                create: {
-                    userId: creatorId
-                }
+                create: [{
+                    userId: creatorId,
+                    role: 'OWNER'
+                },
+                ...projectData.usersId]
             }
         }
     }));
@@ -32,23 +36,25 @@ export async function updateProject(
     }
 
     if (data.usersId && data.usersId.length > 0) {
-        const newIds = new Set(data.usersId);
+        const newIds = new Map(data.usersId.map(user => [user.userId, user.role]));
 
         const existing = await prisma.userProject.findMany({
             where: { projectId },
-            select: { userId: true }
+            select: { userId: true, role: true }
         });
-        const existingIds = new Set(existing.map(e => e.userId));
+        const existingIds = new Map(existing.map(e => [e.userId, e.role]));
 
-        const toAdd = [...newIds].filter(id => !existingIds.has(id));
-        const toRemove = [...existingIds].filter(id => !newIds.has(id));
+        const toAdd = [...newIds.entries()].filter(([userId]) => !existingIds.has(userId));
+        const toRemove = [...existingIds.keys()].filter(userId => !newIds.has(userId));
+        const toUpdate = [...newIds.entries()].filter(([userId, role]) => existingIds.has(userId) && role !== existingIds.get(userId));
 
         if (toAdd.length > 0) {
             queries.push(
                 prisma.userProject.createMany({
-                    data: toAdd.map(userId => ({
+                    data: toAdd.map(([userId, role]) => ({
                         userId,
-                        projectId
+                        projectId,
+                        role: role
                     }))
                 })
             );
@@ -64,14 +70,27 @@ export async function updateProject(
                 })
             );
         }
-    }
 
-    if (queries.length === 0) {
-        return;
-    }
+        if (toUpdate.length > 0) {
+            for (const [userId, role] of toUpdate) {
+                queries.push(
+                    prisma.userProject.update({
+                        where: {
+                            userId_projectId: { projectId, userId }
+                        },
+                        data: { role }
+                    })
+                );
+            }
+        }
 
-    // run all operations atomically
-    return prisma.$transaction(queries);
+        if (queries.length === 0) {
+            return;
+        }
+
+        // run all operations atomically
+        return prisma.$transaction(queries);
+    }
 }
 
 export async function deleteProject(projectId: string) {

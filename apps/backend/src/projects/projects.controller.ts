@@ -1,13 +1,14 @@
 import { Request, Response } from "express";
 import { StatusCodes } from "http-status-codes";
 
-import { ProjectCreateSchema, ProjectUpdateSchema } from '@receipts/shared-schemas/generated';
+import { ProjectUpdateSchema } from '@receipts/shared-schemas/generated';
+import { ProjectCreateFormSchema } from "@receipts/shared-schemas/project";
 import { createProject, deleteProject, getProjects, updateProject } from './projects.service.js'
 import { ProjectRequest } from '../types/requests.js';
 
 export async function createProjectController(req: Request, res: Response) {
     const userId = req.user!.userId;
-    const parsed = ProjectCreateSchema.safeParse(req.body);
+    const parsed = ProjectCreateFormSchema.safeParse(req.body);
     if (!parsed.success) {
         return res
             .status(StatusCodes.BAD_REQUEST)
