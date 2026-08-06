@@ -1,0 +1,28 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.modal {
+    max-width: 90vw;
+}
+
+.dialog {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    width: 360px;
+    max-width: calc(100vw - 2rem);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
