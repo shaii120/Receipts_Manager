@@ -1,32 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ProjectResult } from '@receipts/shared-schemas/generated'
 import styles from './ProjectSidebar.module.css'
-import { createProject, getProjects } from '@/lib/projects'
 import { useProject } from '@/context/ProjectContext'
+import CreateProjectDialog from '@/components/CreateProjectDialog/CreateProjectDialog'
 
 export function ProjectSidebar() {
     const { selectedProjectId, projects, setSelectedProjectId, loadProjects } = useProject()
-    const [creating, setCreating] = useState(false)
     const [isCollapsed, setIsCollapsed] = useState(false)
-
-    function handleCreateProject() {
-        const name = prompt('Project name')
-
-        if (!name) return
-
-        setCreating(true)
-
-        createProject(name)
-            .then((newProject) => setSelectedProjectId(newProject.id))
-            .then(loadProjects)
-            .catch(err => {
-                console.error(err)
-                alert('Failed to create project')
-            })
-            .finally(() => setCreating(false))
-    }
+    const [showCreateDialog, setShowCreateDialog] = useState(false)
 
     useEffect(() => {
         loadProjects()
@@ -51,7 +33,7 @@ export function ProjectSidebar() {
             <aside
                 className={isCollapsed ? styles.collapsed : styles.sidebarList} >
                 <button
-                    onClick={handleCreateProject}
+                    onClick={() => setShowCreateDialog(true)}
                     className={`${styles.button} ${styles.createButton}`}
                 >
                     <svg className={styles.createButtonIcon} viewBox="0 0 24 24">
@@ -70,6 +52,15 @@ export function ProjectSidebar() {
                     </div>
                 ))}
             </aside>
+
+            <CreateProjectDialog
+                open={showCreateDialog}
+                onClose={() => setShowCreateDialog(false)}
+                onCreated={(project) => {
+                    setSelectedProjectId(project.id)
+                    loadProjects()
+                }}
+            />
         </div>
     )
 }
