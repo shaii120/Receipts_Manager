@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes/build/cjs/status-codes.js';
 
-import { isUserInProject } from '../auth/auth.service.js';
-
 export function paramCheckMiddleware(paramName: string) {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {

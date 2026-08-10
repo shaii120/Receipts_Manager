@@ -44,6 +44,7 @@ function FormField({ placeholder, type = "text", register, label, errors, option
 
 function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
     const { selectedProjectId, projects } = useProject();
+    const currentProject = projects.find(p => p.id === selectedProjectId);
 
     const {
         register,
@@ -57,7 +58,7 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
         defaultValues: {
             title: "",
             amount: 0,
-            currency: "USD",
+            currency: currentProject?.primaryCurrency ?? "USD",
             vendor: null,
             projectId: selectedProjectId!,
             boughtAt: new Date().toISOString().split('T')[0]

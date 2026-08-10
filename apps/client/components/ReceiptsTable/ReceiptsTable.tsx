@@ -48,7 +48,7 @@ export default function ReceiptsTable() {
                     <th className={styles.cell}>Amount</th>
                     <th className={styles.cell}>Currency</th>
                     <th className={styles.cell}>Vendor</th>
-                    <th className={styles.cell}>Created At</th>
+                    <th className={styles.cell}>Bought At</th>
                 </tr>
             </thead>
             <tbody>

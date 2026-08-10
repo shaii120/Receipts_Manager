@@ -1,15 +1,12 @@
 "use client";
 
 import { createContext, useContext, useState } from "react";
+import type { UserPublic } from "@receipts/shared-schemas/auth";
 import { login, logout, getMe } from "@/lib/auth";
 
-type User = {
-  id: string;
-  email: string;
-};
 
 type AuthContextType = {
-  user: User | null;
+  user: UserPublic | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
@@ -19,7 +16,7 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserPublic | null>(null);
   const [loading, setLoading] = useState(true);
 
   async function handleLoadUser() {
