@@ -1,9 +1,9 @@
 import { prisma } from 'prisma-my-db/connector';
-import { ProjectUpdate } from "@receipts/shared-schemas/generated";
-import { ProjectCreateForm } from "@receipts/shared-schemas/project";
+import { ProjectResult, ProjectUpdate } from "@receipts/shared-schemas/generated";
+import { ProjectForm, type ProjectResultCustom } from "@receipts/shared-schemas/project";
 import { dbExecute } from "../lib/db.js";
 
-export async function createProject(creatorId: string, projectData: ProjectCreateForm) {
+export async function createProject(creatorId: string, projectData: ProjectForm) {
     return dbExecute(() => prisma.project.create({
         data: {
             name: projectData.name.trim(),
@@ -26,11 +26,29 @@ export async function updateProject(
 ) {
     const queries = [];
 
-    if (data.name && data.name.trim() !== '') {
+    if (data.name && data.name.trim()) {
         queries.push(
             prisma.project.update({
                 where: { id: projectId },
                 data: { name: data.name.trim() }
+            })
+        );
+    }
+
+    if (data.description && data.description.trim()) {
+        queries.push(
+            prisma.project.update({
+                where: { id: projectId },
+                data: { description: data.description.trim() }
+            })
+        );
+    }
+
+    if (data.primaryCurrency && data.primaryCurrency.trim()) {
+        queries.push(
+            prisma.project.update({
+                where: { id: projectId },
+                data: { primaryCurrency: data.primaryCurrency.trim() }
             })
         );
     }
@@ -83,28 +101,69 @@ export async function updateProject(
                 );
             }
         }
-
-        if (queries.length === 0) {
-            return;
-        }
-
-        // run all operations atomically
-        return prisma.$transaction(queries);
     }
+
+    if (queries.length === 0) {
+        return;
+    }
+
+    // run all operations atomically
+    const transaction = prisma.$transaction(queries);
+    await dbExecute(() => transaction);
+
+    const project = await dbExecute(() => prisma.project.findUnique({
+        where: { id: projectId },
+    }))
+    if (!project) {
+        throw new Error(`Project with ID ${projectId} not found after update.`);
+    }
+    const projectSendReady: ProjectResult = { ...project, totalAmount: Number(project.totalAmount) }
+
+    return projectSendReady;
 }
 
 export async function deleteProject(projectId: string) {
-    return dbExecute(() => prisma.project.delete({
-        where: { id: projectId }
-    }));
+    return dbExecute(() =>
+        prisma.$transaction([
+            prisma.receipt.deleteMany({
+                where: { projectId }
+            }),
+            prisma.userProject.deleteMany({
+                where: { projectId }
+            }),
+            prisma.project.delete({
+                where: { id: projectId }
+            })
+        ])
+    );
 }
 
 export async function getProjects(userId: string) {
-    return dbExecute(() => prisma.project.findMany({
+    const projects = await dbExecute(() => prisma.project.findMany({
         where: {
             users: {
                 some: { userId }
             }
+        },
+        include: {
+            users: {
+                select: {
+                    role: true,
+                    user: {
+                        select: {
+                            id: true,
+                            email: true
+                        }
+                    }
+                }
+            }
+        },
+        orderBy: {
+            name: 'asc'
         }
     }));
+
+    const projectsSendReady: ProjectResultCustom[] = projects.map(p => { return { ...p, totalAmount: Number(p.totalAmount) } })
+
+    return projectsSendReady
 }
