@@ -1,0 +1,46 @@
+.button {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.button:hover {
+    background-color: #eaeaea;
+}
+
+.popover {
+    min-width: 120px;
+    padding: 4px;
+
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.menu {
+    outline: none;
+}
+
+.menuItem {
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+}
+
+.menuItem[data-focused] {
+    background-color: #f5f5f5;
+}
