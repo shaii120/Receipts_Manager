@@ -2,14 +2,17 @@ import type {
     ProjectResult,
     ProjectUpdate
 } from '@receipts/shared-schemas/generated';
-import { ProjectCreateForm } from '@receipts/shared-schemas/project';
+import {
+    ProjectForm,
+    ProjectResultCustom
+} from '@receipts/shared-schemas/project';
 import { apiFetch } from './api';
 
 export function getProjects() {
-    return apiFetch<ProjectResult[]>('/api/projects')
+    return apiFetch<ProjectResultCustom[]>('/api/projects')
 }
 
-export function createProject(data: ProjectCreateForm) {
+export function createProject(data: ProjectForm) {
     return apiFetch<ProjectResult>('/api/projects', {
         method: 'POST',
         body: JSON.stringify(data),
