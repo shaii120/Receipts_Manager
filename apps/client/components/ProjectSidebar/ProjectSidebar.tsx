@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useProject } from '@/context/ProjectContext'
 import CreateProjectDialog from '@/components/ProjectForm/CreateProjectDialog'
+import ProjectMenu from "@/components/ProjectMenu/ProjectMenu"
 import styles from './ProjectSidebar.module.css'
 
 export function ProjectSidebar() {
@@ -55,6 +56,7 @@ export function ProjectSidebar() {
                         onClick={() => setSelectedProjectId(p.id)}
                         className={`${styles.item} ${selectedProjectId === p.id ? styles.active : ''}`}
                     >
+                        <ProjectMenu project={p} />
                         {p.name}
                     </div>
                 ))}

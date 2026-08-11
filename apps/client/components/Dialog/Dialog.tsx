@@ -26,6 +26,7 @@ export default function Dialog({
             isOpen={open}
             onOpenChange={onOpenChange}
             className={styles.overlay}
+            onClick={event => event.stopPropagation()}
         >
             <Modal className={styles.modal}>
                 <AriaDialog
