@@ -1,12 +1,18 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import styles from './ProjectSidebar.module.css'
 import { useProject } from '@/context/ProjectContext'
-import CreateProjectDialog from '@/components/CreateProjectDialog/CreateProjectDialog'
+import CreateProjectDialog from '@/components/ProjectForm/CreateProjectDialog'
+import styles from './ProjectSidebar.module.css'
 
 export function ProjectSidebar() {
-    const { selectedProjectId, projects, setSelectedProjectId, loadProjects } = useProject()
+    const {
+        selectedProjectId,
+        projects,
+        setSelectedProjectId,
+        loadProjects
+    } = useProject()
+
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [showCreateDialog, setShowCreateDialog] = useState(false)
 
@@ -42,6 +48,7 @@ export function ProjectSidebar() {
 
                     Add New Project
                 </button>
+
                 {projects.map(p => (
                     <div
                         key={p.id}
