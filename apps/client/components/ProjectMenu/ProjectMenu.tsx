@@ -4,6 +4,8 @@ import { useState } from "react";
 
 import type { ProjectResultCustom } from "@receipts/shared-schemas/project";
 
+import { getReceipts } from "@/lib/receipts";
+import { exportReceipts } from "@/lib/receiptsExport";
 import { deleteProject } from "@/lib/projects";
 import { useAuth } from "@/context/AuthContext";
 import { useProject } from "@/context/ProjectContext";
@@ -15,12 +17,13 @@ type ProjectMenuProps = {
     project: ProjectResultCustom;
 };
 
-type ProjectAction = "view" | "edit" | "delete";
+type ProjectAction = "view" | "edit" | "delete" | "export";
 
 const actionLabels: Record<ProjectAction, string> = {
     view: "View",
     edit: "Edit",
-    delete: "Delete"
+    delete: "Delete",
+    export: "Export to CSV"
 };
 
 export default function ProjectMenu({
@@ -38,7 +41,7 @@ export default function ProjectMenu({
 
     const isOwner = projectUser?.role === "OWNER";
 
-    const actions: ProjectAction[] = ["view"];
+    const actions: ProjectAction[] = ["view", "export"];
 
     if (isOwner) {
         actions.push("edit", "delete");
@@ -56,7 +59,11 @@ export default function ProjectMenu({
 
             await deleteProject(project.id);
             await loadProjects();
-        }
+        },
+        export: async () => {
+            const receipts = await getReceipts(project.id);
+            exportReceipts(receipts, project.name);
+        },
     };
 
     return (
