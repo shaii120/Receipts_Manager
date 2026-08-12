@@ -14,15 +14,22 @@ import { getExchangeRate } from "../currencies/currencies.service.js";
 
 export async function createReceiptService(data: ReceiptCreate): Promise<ReceiptMutationResult> {
     return dbExecute(async () => {
-        return prisma.$transaction(async (tx) => {
-            const project = await prisma.project.findUnique({
-                where: { id: data.projectId },
-                select: { primaryCurrency: true }
-            });
+        const project = await prisma.project.findUnique({
+            where: { id: data.projectId },
+            select: { primaryCurrency: true }
+        });
 
-            if (!project) {
-                throw new Error("Project not found");
-            }
+        if (!project) {
+            throw new Error("Project not found");
+        }
+
+        const rate = await getExchangeRate(
+            data.currency,
+            project.primaryCurrency,
+            data.boughtAt
+        );
+
+        return prisma.$transaction(async (tx) => {
 
             const receipt = await tx.receipt.create({
                 data: {
@@ -31,11 +38,6 @@ export async function createReceiptService(data: ReceiptCreate): Promise<Receipt
                 }
             });
 
-            const rate = await getExchangeRate(
-                data.currency,
-                project.primaryCurrency,
-                data.boughtAt
-            );
             const convertedAmount = receipt.amount.mul(new Prisma.Decimal(rate));
 
             const updatedProject = await tx.project.update({
