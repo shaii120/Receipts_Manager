@@ -45,6 +45,15 @@ export async function updateProject(
     }
 
     if (data.primaryCurrency && data.primaryCurrency.trim()) {
+        const hasReceipts = await prisma.receipt.findFirst({
+            where: { projectId },
+            select: { id: true }
+        });
+
+        if (hasReceipts) {
+            throw new Error("Cannot change primary currency of a project with receipts");
+        }
+
         queries.push(
             prisma.project.update({
                 where: { id: projectId },
@@ -163,7 +172,7 @@ export async function getProjects(userId: string) {
         }
     }));
 
-    const projectsSendReady: ProjectResultCustom[] = projects.map(p => { return { ...p, totalAmount: Number(p.totalAmount) } })
+    const projectsSendReady: ProjectResultCustom[] = projects.map(p => ({ ...p, totalAmount: Number(p.totalAmount) }))
 
     return projectsSendReady
 }

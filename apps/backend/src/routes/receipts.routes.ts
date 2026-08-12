@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { createReceipt, deleteReceipt, getReceiptsByProject, updateReceipt } from "../receipts/receipts.controller.js";
-import { authMiddleware, projectAccessMiddleware, receiptAccessMiddleware } from "../middlewares/auth.middleware.js";
+import {
+    authMiddleware,
+    projectAccessMiddleware,
+    receiptAccessMiddleware,
+    projectBodyAccessMiddleware
+} from "../middlewares/auth.middleware.js";
 import { paramCheckMiddleware } from "../middlewares/validation.middlewere.js";
 
 const router: Router = Router();
@@ -13,7 +18,11 @@ router.get(
     projectAccessMiddleware,
     getReceiptsByProject
 );
-router.post("/", createReceipt);
+router.post(
+    "/",
+    projectBodyAccessMiddleware,
+    createReceipt
+);
 router.put(
     "/:receiptId",
     paramCheckMiddleware('receiptId'),

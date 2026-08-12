@@ -36,6 +36,21 @@ export async function projectAccessMiddleware(req: ProjectRequest, res: Response
     }
 }
 
+export async function projectBodyAccessMiddleware(req: Request, res: Response, next: NextFunction) {
+    try {
+        const userId = req.user!.userId;
+        const { projectId } = req.body;
+
+        const relation = await isUserInProject(userId, projectId);
+        if (!relation) {
+            return res.status(StatusCodes.FORBIDDEN).json({ message: 'Access denied' });
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+}
 
 export async function receiptAccessMiddleware(req: ReceiptRequest, res: Response, next: NextFunction) {
     try {
