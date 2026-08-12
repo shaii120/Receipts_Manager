@@ -9,7 +9,8 @@
         "./auth": "./dist/auth/index.js",
         "./currency": "./dist/currency/index.js",
         "./generated": "./dist/generated/index.js",
-        "./project": "./dist/project/index.js"
+        "./project": "./dist/project/index.js",
+        "./receipt": "./dist/receipt/index.js"
     },
     "scripts": {
         "clean": "rm -rf dist node_modules tsconfig.tsbuildinfo",

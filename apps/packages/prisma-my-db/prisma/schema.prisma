@@ -15,7 +15,7 @@ generator zod {
 model Receipt {
   id       String   @id @default(uuid())
   title    String
-  amount   Float
+  amount   Decimal
   currency String
   vendor   String?
   boughtAt DateTime

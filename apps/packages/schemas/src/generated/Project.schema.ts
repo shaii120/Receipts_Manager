@@ -7,7 +7,7 @@ export const ProjectModelSchema = z.object({
   name: z.string().nonempty("name is required"),
   description: z.string().nullish(),
   primaryCurrency: z.string().nonempty("primaryCurrency is required"),
-  totalAmount: z.number(),
+  totalAmount: z.number("totalAmount should be a number"),
   receiptsId: z.array(ReceiptModelSchema),
   usersId: z.array(UserProjectModelSchema)
 });
@@ -28,7 +28,7 @@ export const ProjectUpdateSchema = z.object({
   name: z.string().nullish(),
   description: z.string().nullish(),
   primaryCurrency: z.string().nullish(),
-  totalAmount: z.number().nullish(),
+  totalAmount: z.number("totalAmount should be a number").nullish(),
   receiptsId: z.array(ReceiptModelSchema).nullish(),
   usersId: z.array(UserProjectModelSchema).nullish()
 });
@@ -40,7 +40,7 @@ export const ProjectResultSchema = z.object({
   name: z.string().nonempty("name is required"),
   description: z.string().nullish(),
   primaryCurrency: z.string().nonempty("primaryCurrency is required"),
-  totalAmount: z.number()
+  totalAmount: z.number("totalAmount should be a number")
 });
 export type ProjectResult = z.infer<typeof ProjectResultSchema>;
 export type ProjectResultInput = z.input<typeof ProjectResultSchema>;
