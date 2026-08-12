@@ -43,7 +43,11 @@ function FormField({ placeholder, type = "text", register, label, errors, option
 };
 
 function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
-    const { selectedProjectId, projects } = useProject();
+    const {
+        selectedProjectId,
+        projects,
+        updateProjectTotalAmount
+    } = useProject();
     const currentProject = projects.find(p => p.id === selectedProjectId);
 
     const {
@@ -68,8 +72,9 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
 
     async function onSubmit(data: ReceiptCreate) {
         try {
-            await createReceipt(data);
+            const result = await createReceipt(data);
 
+            updateProjectTotalAmount(data.projectId, result.totalAmount)
             reset();
             onAdded?.();
         } catch (err) {

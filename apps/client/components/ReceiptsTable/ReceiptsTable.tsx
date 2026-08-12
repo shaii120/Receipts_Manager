@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-import { type ReceiptModel } from "@receipts/shared-schemas";
+import type { ReceiptModel } from "@receipts/shared-schemas";
 import { deleteReceipt, getReceipts } from "@/lib/receipts";
 import styles from "./ReceiptsTable.module.css";
 import { useProject } from "@/context/ProjectContext";
@@ -14,7 +14,7 @@ export default function ReceiptsTable() {
     const [receipts, setReceipts] = useState<ReceiptModel[]>([]);
     const [editingReceiptId, setEditingReceiptId] = useState<string | null>(null);
     const router = useRouter();
-    const { selectedProjectId } = useProject()
+    const { selectedProjectId, updateProjectTotalAmount } = useProject()
     const reloadReceipts = useCallback(async () => {
         if (!selectedProjectId) {
             setReceipts([]);
@@ -30,8 +30,11 @@ export default function ReceiptsTable() {
         if (!confirm("Delete this receipt?")) {
             return;
         }
+        if (!selectedProjectId)
+            return;
 
-        await deleteReceipt(receiptId);
+        const result = await deleteReceipt(receiptId);
+        updateProjectTotalAmount(selectedProjectId, result.totalAmount)
         await reloadReceipts();
     }
 
@@ -56,8 +59,9 @@ export default function ReceiptsTable() {
                     <ReceiptEditRow
                         key={rec.id}
                         receipt={rec}
-                        onSaved={async () => {
+                        onSaved={async (totalAmount) => {
                             setEditingReceiptId(null);
+                            updateProjectTotalAmount(rec.projectId, totalAmount)
                             await reloadReceipts();
                         }}
                         onCancel={() => setEditingReceiptId(null)}

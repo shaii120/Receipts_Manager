@@ -15,7 +15,7 @@ import styles from "./ReceiptRow.module.css";
 
 type ReceiptEditRowProps = {
     receipt: ReceiptModel;
-    onSaved: () => void;
+    onSaved: (totalAmount: number) => void;
     onCancel: () => void;
 };
 
@@ -45,8 +45,8 @@ export default function ReceiptEditRow({
 
     async function onSubmit(data: ReceiptCreate) {
         try {
-            await updateReceipt(receipt.id, data);
-            onSaved();
+            const result = await updateReceipt(receipt.id, data);
+            onSaved(result.totalAmount);
         } catch (error) {
             console.error(error);
         }

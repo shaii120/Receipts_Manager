@@ -9,6 +9,7 @@ type ProjectContextType = {
     projects: ProjectResultCustom[]
     setSelectedProjectId: (id: string | null) => void
     loadProjects: () => Promise<void>
+    updateProjectTotalAmount: (projectId: string, totalAmount: number) => void
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined)
@@ -29,12 +30,23 @@ export function ProjectProvider({ children }: { children: React.ReactNode }) {
         }
     }
 
+    function updateProjectTotalAmount(projectId: string, totalAmount: number) {
+        setProjects(currentProjects =>
+            currentProjects.map(project =>
+                project.id === projectId
+                    ? { ...project, totalAmount }
+                    : project
+            )
+        )
+    }
+
     return (
         <ProjectContext.Provider value={{
             selectedProjectId,
             projects,
             setSelectedProjectId,
-            loadProjects: handleLoadProjects
+            loadProjects: handleLoadProjects,
+            updateProjectTotalAmount
         }}>
             {children}
         </ProjectContext.Provider>
