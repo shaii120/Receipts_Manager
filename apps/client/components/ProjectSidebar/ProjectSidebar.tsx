@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { GridList, GridListItem } from 'react-aria-components'
 import { useProject } from '@/context/ProjectContext'
 import CreateProjectDialog from '@/components/ProjectForm/CreateProjectDialog'
 import ProjectMenu from "@/components/ProjectMenu/ProjectMenu"
@@ -50,16 +51,26 @@ export function ProjectSidebar() {
                     Add New Project
                 </button>
 
-                {projects.map(p => (
-                    <div
-                        key={p.id}
-                        onClick={() => setSelectedProjectId(p.id)}
-                        className={`${styles.item} ${selectedProjectId === p.id ? styles.active : ''}`}
-                    >
-                        <ProjectMenu project={p} />
-                        {p.name}
-                    </div>
-                ))}
+                <GridList
+                    aria-label="Projects"
+                    selectionMode="single"
+                    selectedKeys={selectedProjectId ? [selectedProjectId] : []}
+                    onSelectionChange={(keys) => {
+                        const selectedKey = [...keys][0]
+                        setSelectedProjectId(selectedKey ? String(selectedKey) : null)
+                    }}
+                >
+                    {projects.map(p => (
+                        <GridListItem
+                            key={p.id}
+                            id={p.id}
+                            className={styles.item}
+                        >
+                            <ProjectMenu project={p} />
+                            {p.name}
+                        </GridListItem>
+                    ))}
+                </GridList>
             </aside>
 
             <CreateProjectDialog

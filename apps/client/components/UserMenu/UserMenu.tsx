@@ -1,78 +1,55 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+    MenuTrigger,
+    Button,
+    Popover,
+    Menu,
+    MenuItem,
+} from "react-aria-components";
 
+import type { ActionMenuItem } from "@/components/ActionsMenu/ActionsMenu"
 import { useAuth } from "@/context/AuthContext";
 import styles from "./UserMenu.module.css";
 
 export default function UserMenu() {
-  const { logout, user } = useAuth();
-  const router = useRouter();
+    const { user, logout } = useAuth();
+    const router = useRouter();
+    const userIcon = "👤"
+    const itemsMap: ActionMenuItem[] = [
+        { key: "logout", label: "Logout", onAction: handleLogout }
+    ]
 
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const userIcon = "👤"
-  const buttonsMap = new Map<string, () => void>([
-    ["Logout", handleLogout]
-  ]);
-
-  useEffect(() => {
-    function handleMouseDown(event: MouseEvent) {
-      if (!menuRef.current?.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
+    async function handleLogout() {
+        await logout();
+        router.push("/login");
     }
 
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleMouseDown);
-    document.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      document.removeEventListener("mousedown", handleMouseDown);
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
-
-  async function handleLogout() {
-    setIsOpen(false);
-    await logout();
-    router.push("/login");
-  }
-
-  return (
-    <div className={styles.container} ref={menuRef}>
-      <button
-        className={styles.menuButton}
-        onClick={() => setIsOpen((value) => !value)}
-      >
-        {userIcon}
-      </button>
-
-      {isOpen && (
-        <div className={styles.menu}>
-          {user && (
-            <div className={styles.user}>
-              {user.email}
-            </div>
-          )}
-
-          {Array.from(buttonsMap, ([label, action]) => (
-            <button
-              key={label}
-              className={styles.menuItem}
-              onClick={action}
+    return (
+        <MenuTrigger>
+            <Button
+                className={styles.button}
+                aria-label="User menu"
             >
-              {label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+                {userIcon}
+            </Button>
+
+            <Popover className={styles.popover}>
+                <div className={styles.user}>
+                    {user?.email}
+                </div>
+
+                <Menu className={styles.menu}>
+                    <MenuItem
+                        id="logout"
+                        className={styles.menuItem}
+                        onAction={handleLogout}
+                    >
+                        Logout
+                    </MenuItem>
+                </Menu>
+            </Popover>
+        </MenuTrigger>
+    );
 }

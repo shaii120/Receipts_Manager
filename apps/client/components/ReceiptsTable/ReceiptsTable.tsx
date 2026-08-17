@@ -1,6 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import {
+    useEffect,
+    useState,
+    useCallback
+} from "react";
 import { useRouter } from "next/navigation";
 
 import type { ReceiptModel } from "@receipts/shared-schemas";

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -28,6 +29,7 @@ export default function ReceiptEditRow({
         register,
         handleSubmit,
         control,
+        setFocus,
         formState: { isSubmitting },
     } = useForm<ReceiptCreateInput, any, ReceiptCreate>({
         resolver: zodResolver(ReceiptCreateSchema),
@@ -52,8 +54,25 @@ export default function ReceiptEditRow({
         }
     }
 
+    useEffect(() => {
+        setFocus("title");
+    }, [setFocus]);
+
     return (
-        <tr className={styles.row}>
+        <tr
+            className={styles.row}
+            onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                    event.preventDefault();
+                    onCancel();
+                }
+
+                if (event.key === "Enter" && event.ctrlKey) {
+                    event.preventDefault();
+                    handleSubmit(onSubmit)();
+                }
+            }}
+        >
             <td className={`${styles.cell} ${styles.actionsCell}`}>
                 <div className={styles.actions}>
                     <button

@@ -20,6 +20,12 @@
     background-color: #eaeaea;
 }
 
+.button:focus,
+.button[data-focus-visible] {
+    background-color: #eaeaea;
+    outline: none;
+}
+
 .popover {
     min-width: 120px;
     padding: 4px;
@@ -39,8 +45,9 @@
     border-radius: 4px;
     cursor: pointer;
     outline: none;
+    text-align: left;
 }
 
-.menuItem[data-focused] {
+.menuItem[data-focus-visible] {
     background-color: #f5f5f5;
 }
