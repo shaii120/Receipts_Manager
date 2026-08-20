@@ -34,17 +34,17 @@
     justify-content: center;
 }
 
+.projectName {
+    flex: 1;
+    min-width: 0;
+}
+
 .item {
     display: flex;
     align-items: center;
     gap: 4px;
     cursor: pointer;
     padding: 6px 8px;
-}
-
-.projectName {
-    flex: 1;
-    min-width: 0;
 }
 
 .item[data-hovered],

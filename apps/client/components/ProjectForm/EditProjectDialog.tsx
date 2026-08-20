@@ -29,7 +29,7 @@ export default function EditProjectDialog({
     async function handleSubmit(data: ProjectFormType) {
         if (!user) return;
 
-        const updatedUsers: UserProjectModel[] = data.usersId.map(selectedUser => ({
+        const updatedUsers: UserProjectModel[] = data.users.map(selectedUser => ({
             ...selectedUser,
             projectId: project.id
         }))
@@ -42,7 +42,7 @@ export default function EditProjectDialog({
             name: data.name,
             description: data.description,
             primaryCurrency: data.primaryCurrency,
-            usersId: updatedUsers
+            users: updatedUsers
         });
 
         onUpdated(updatedProject);
@@ -64,8 +64,7 @@ export default function EditProjectDialog({
                     name: project.name,
                     description: project.description,
                     primaryCurrency: project.primaryCurrency,
-                    receiptsId: [],
-                    usersId: []
+                    users: []
                 }}
                 defaultUsers={users}
                 onSubmit={handleSubmit}
