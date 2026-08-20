@@ -17,3 +17,21 @@ export function paramCheckMiddleware(paramName: string) {
         }
     };
 }
+
+export function queryParamCheckMiddleware(paramName: string) {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const paramValue = req.query[paramName];
+
+            if (paramValue !== undefined && typeof paramValue !== 'string') {
+                return res.status(StatusCodes.BAD_REQUEST).json({
+                    message: `Invalid ${paramName}`
+                });
+            }
+
+            next();
+        } catch (error) {
+            next(error);
+        }
+    };
+}

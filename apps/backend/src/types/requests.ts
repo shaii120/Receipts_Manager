@@ -11,3 +11,9 @@ export interface ReceiptRequest extends Request {
         receiptId: string;
     };
 }
+
+export interface ProjectQueryRequest extends Request {
+    query: {
+        parentProjectId?: string;
+    };
+}

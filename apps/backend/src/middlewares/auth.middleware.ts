@@ -87,3 +87,43 @@ export async function projectOwnerMiddleware(req: ProjectRequest, res: Response,
         next(error);
     }
 }
+
+export async function projectQueryAccessMiddleware(req: Request, res: Response, next: NextFunction) {
+    try {
+        const userId = req.user!.userId;
+        const projectId = req.query.parentProjectId;
+
+        if (typeof projectId !== 'string') {
+            return next();
+        }
+
+        const relation = await isUserInProject(userId, projectId);
+        if (!relation) {
+            return res.status(StatusCodes.FORBIDDEN).json({ message: 'Access denied' });
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function projectParentBodyAccessMiddleware(req: Request, res: Response, next: NextFunction) {
+    try {
+        const userId = req.user!.userId;
+        const { parentProjectId } = req.body;
+
+        if (!parentProjectId) {
+            return next();
+        }
+
+        const relation = await isUserInProject(userId, parentProjectId);
+        if (!relation) {
+            return res.status(StatusCodes.FORBIDDEN).json({ message: 'Access denied' });
+        }
+
+        next();
+    } catch (error) {
+        next(error);
+    }
+}
