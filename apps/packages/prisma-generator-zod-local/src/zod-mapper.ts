@@ -1,46 +1,55 @@
 import type { DMMF } from '@prisma/generator-helper';
 
-export function fieldsToZodObject(fields: DMMF.Field[], isUpdate: boolean = false): string {
-  return fields
-    .map(field => fieldToZod(field, isUpdate))
-    .join(',\n');
+export type SchemaField = {
+    field: DMMF.Field;
+    isUpdate: boolean;
+    isRecursive: boolean;
+};
+
+export function fieldsToZodObject(fields: SchemaField[]): string {
+    return fields
+        .map(field => fieldToZod(field))
+        .join(',\n');
 }
 
-function fieldToZod(field: DMMF.Field, isUpdate: boolean = false): string {
-  let name = field.name;
-  let zodType = prismaScalarToZod(field, name);
+function fieldToZod(schemField: SchemaField): string {
+    let name = schemField.field.name;
+    let zodType = prismaScalarToZod(schemField, name);
 
-  if (field.isList) {
-    zodType = `z.array(${zodType})`;
-    name += 'Id';
-  }
+    if (schemField.field.isList) {
+        zodType = `z.array(${zodType})`;
+    }
 
-  if (isUpdate || !field.isRequired) {
-    zodType += '.nullish()';
-  }
-  else if (field.type == "String") {
-    zodType += `.nonempty(\"${name} is required\")`;
-  }
+    if (schemField.isUpdate || !schemField.field.isRequired) {
+        zodType += '.nullish()';
+    }
+    else if (schemField.field.type == "String") {
+        zodType += `.nonempty(\"${name} is required\")`;
+    }
 
-  return `  ${name}: ${zodType}`;
+    if (schemField.isRecursive) {
+        return `\tget ${name}(){ return ${zodType} }`
+    }
+
+    return `\t${name}: ${zodType}`;
 }
 
-function prismaScalarToZod(field: DMMF.Field, name: string): string {
-  switch (field.kind) {
-    case 'enum':
-      return `${field.type}Schema`;
-    case 'object':
-      return `${field.type}ModelSchema`;
-  }
+function prismaScalarToZod(schemField: SchemaField, name: string): string {
+    switch (schemField.field.kind) {
+        case 'enum':
+            return `${schemField.field.type}Schema`;
+        case 'object':
+            return `${schemField.field.type}ModelSchema`;
+    }
 
-  switch (field.type) {
-    case 'String': return 'z.string()';
-    case 'Int': return 'z.number().int(\"${name} should be a whole number\")';
-    case 'Decimal':
-    case 'Float': return `z.number(\"${name} should be a number\")`;
-    case 'Boolean': return 'z.boolean()';
-    case 'DateTime': return 'z.string().pipe(z.coerce.date())';
-    case 'Json': return 'z.unknown()';
-    default: return 'z.any()';
-  }
+    switch (schemField.field.type) {
+        case 'String': return 'z.string()';
+        case 'Int': return 'z.number().int(\"${name} should be a whole number\")';
+        case 'Decimal':
+        case 'Float': return `z.number(\"${name} should be a number\")`;
+        case 'Boolean': return 'z.boolean()';
+        case 'DateTime': return 'z.string().pipe(z.coerce.date())';
+        case 'Json': return 'z.unknown()';
+        default: return 'z.any()';
+    }
 }

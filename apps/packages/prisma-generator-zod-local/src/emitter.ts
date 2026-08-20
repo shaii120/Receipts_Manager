@@ -1,3 +1,5 @@
+import type { SchemaField } from "./zod-mapper.js"
+
 import { DMMF } from '@prisma/generator-helper';
 import { fieldsToZodObject } from "./zod-mapper.js"
 import { writeFileSync, mkdirSync } from 'node:fs'
@@ -30,7 +32,7 @@ function modelToSchemas(model: DMMF.Model): string {
     ));
     const modelSchemas = Array.from(new Set(
         fieldsMap.get(schemaTypes.Model)
-            ?.filter(f => f.kind === 'object')
+            ?.filter(f => f.kind === 'object' && f.type !== model.name)
             .map(f => f.type)
     ));
 
@@ -48,7 +50,12 @@ function modelToSchemas(model: DMMF.Model): string {
         .forEach((fields, type) => {
             if (fields.length === 0) return;
             const isUpdate = type === schemaTypes.Update;
-            code += `export const ${model.name}${type}Schema = z.object({\n${fieldsToZodObject(fields, isUpdate)}\n});\n`;
+            const schemaFields: SchemaField[] = fields.map(f => ({
+                field: f,
+                isUpdate: isUpdate,
+                isRecursive: type === schemaTypes.Model && f.kind === "object" && model.name === f.type
+            }))
+            code += `export const ${model.name}${type}Schema = z.object({\n${fieldsToZodObject(schemaFields)}\n});\n`;
             code += `export type ${model.name}${type} = z.infer<typeof ${model.name}${type}Schema>;\n`;
             code += `export type ${model.name}${type}Input = z.input<typeof ${model.name}${type}Schema>;\n`;
             code += '\n';
