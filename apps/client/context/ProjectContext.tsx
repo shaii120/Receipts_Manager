@@ -1,51 +1,96 @@
 'use client'
 
-import { createContext, useContext, useState } from 'react'
+import {
+    createContext,
+    useContext,
+    useEffect,
+    useState
+} from 'react'
 import type { ProjectResultCustom } from '@receipts/shared-schemas/project'
-import { getProjects } from '@/lib/projects'
+import { getProject, getProjects } from '@/lib/projects'
 
 type ProjectContextType = {
-    selectedProjectId: string | null
+    selectedProject: ProjectResultCustom | null
     projects: ProjectResultCustom[]
-    setSelectedProjectId: (id: string | null) => void
-    loadProjects: () => Promise<void>
-    updateProjectTotalAmount: (projectId: string, totalAmount: number) => void
+    canGoBack: boolean
+    selectProject: (project: ProjectResultCustom | null) => Promise<void>
+    projectCreated: (project: ProjectResultCustom) => Promise<void>
+    refreshProjects: () => Promise<ProjectResultCustom[] | null>
+    goBack: () => Promise<void>
+    updateProjectTotalAmount: (totalAmount: number) => void
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined)
 
 export function ProjectProvider({ children }: { children: React.ReactNode }) {
-    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null)
+    const [selectedProject, setSelectedProject] = useState<ProjectResultCustom | null>(null)
     const [projects, setProjects] = useState<ProjectResultCustom[]>([])
+    const [displayedProjectsParent, setDisplayedProjectsParent] = useState<ProjectResultCustom | null>(null)
 
-    async function handleLoadProjects() {
+    async function refreshProjects(): Promise<ProjectResultCustom[] | null> {
         try {
-            const data = await getProjects()
-            if (data) {
-                setProjects(data)
-            }
+            const parentProjectId = displayedProjectsParent?.id ?? null
+            const data = await getProjects(parentProjectId)
+            setProjects(data)
+            return data
         } catch (err) {
             console.error(err)
-            setProjects([])
+            return null
         }
     }
 
-    function updateProjectTotalAmount(projectId: string, totalAmount: number) {
-        setProjects(currentProjects =>
-            currentProjects.map(project =>
-                project.id === projectId
-                    ? { ...project, totalAmount }
-                    : project
-            )
-        )
+    useEffect(() => {
+        refreshProjects()
+    }, [])
+
+    async function selectProject(project: ProjectResultCustom | null) {
+        setSelectedProject(project ?? displayedProjectsParent)
+        if (!project)
+            return
+        const data = await getProjects(project.id)
+
+        if (data && data.length > 0) {
+            setProjects(data)
+            setDisplayedProjectsParent(project)
+        }
+    }
+
+    async function projectCreated(project: ProjectResultCustom) {
+        if (project.parentProjectId === (displayedProjectsParent?.id ?? null)) {
+            await refreshProjects()
+            setSelectedProject(project)
+            return
+        }
+
+        if (selectedProject && selectedProject.id === project.parentProjectId) {
+            await selectProject(selectedProject)
+        }
+    }
+
+    async function goBack() {
+        if (!displayedProjectsParent) return
+
+        const parentProject = displayedProjectsParent.parentProjectId ? await getProject(displayedProjectsParent.parentProjectId) : null
+        setSelectedProject(parentProject)
+        const data = await getProjects(parentProject?.id)
+        setProjects(data)
+        setDisplayedProjectsParent(parentProject)
+    }
+
+    function updateProjectTotalAmount(totalAmount: number) {
+        if (selectedProject)
+            setSelectedProject({ ...selectedProject, totalAmount })
     }
 
     return (
         <ProjectContext.Provider value={{
-            selectedProjectId,
+            selectedProject,
             projects,
-            setSelectedProjectId,
-            loadProjects: handleLoadProjects,
+            canGoBack: displayedProjectsParent !== null,
+            selectProject,
+            projectCreated,
+            refreshProjects,
+            goBack,
             updateProjectTotalAmount
         }}>
             {children}

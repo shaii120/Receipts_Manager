@@ -1,11 +1,12 @@
 "use client";
 
 import type {
-    ProjectResult
-} from "@receipts/shared-schemas/generated";
-import {
-    type ProjectForm as ProjectFormType,
+    ProjectResultCustom
+} from "@receipts/shared-schemas/project";
+import type {
+    ProjectForm as ProjectFormType,
 } from "@receipts/shared-schemas/project"
+import { useProject } from "@/context/ProjectContext";
 import { createProject } from "@/lib/projects";
 import Dialog from "@/components/Dialog/Dialog";
 import ProjectForm from "./ProjectForm";
@@ -13,7 +14,7 @@ import ProjectForm from "./ProjectForm";
 type CreateProjectDialogProps = {
     open: boolean;
     onClose: () => void;
-    onCreated: (project: ProjectResult) => void;
+    onCreated: (project: ProjectResultCustom) => void;
 };
 
 export default function CreateProjectDialog({
@@ -21,10 +22,14 @@ export default function CreateProjectDialog({
     onClose,
     onCreated
 }: CreateProjectDialogProps) {
+    const { selectedProject } = useProject();
 
     async function handleCreate(data: ProjectFormType) {
         try {
-            const project = await createProject(data);
+            const project = await createProject({
+                ...data,
+                parentProjectId: selectedProject?.id
+            });
 
             onCreated(project);
             onClose();

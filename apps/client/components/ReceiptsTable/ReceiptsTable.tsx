@@ -18,27 +18,26 @@ export default function ReceiptsTable() {
     const [receipts, setReceipts] = useState<ReceiptModel[]>([]);
     const [editingReceiptId, setEditingReceiptId] = useState<string | null>(null);
     const router = useRouter();
-    const { selectedProjectId, updateProjectTotalAmount } = useProject()
+    const { selectedProject, updateProjectTotalAmount } = useProject()
     const reloadReceipts = useCallback(async () => {
-        if (!selectedProjectId) {
+        if (!selectedProject) {
             setReceipts([]);
             return;
         }
 
-        getReceipts(selectedProjectId, router)
+        getReceipts(selectedProject.id, router)
             .then(setReceipts)
             .catch(console.error);
-    }, [selectedProjectId, router]);
+    }, [selectedProject, router]);
 
     async function handleDelete(receiptId: string) {
-        if (!confirm("Delete this receipt?")) {
+        if (!selectedProject
+            || !confirm("Delete this receipt?")) {
             return;
         }
-        if (!selectedProjectId)
-            return;
 
         const result = await deleteReceipt(receiptId);
-        updateProjectTotalAmount(selectedProjectId, result.totalAmount)
+        updateProjectTotalAmount(result.totalAmount)
         await reloadReceipts();
     }
 
@@ -65,7 +64,7 @@ export default function ReceiptsTable() {
                         receipt={rec}
                         onSaved={async (totalAmount) => {
                             setEditingReceiptId(null);
-                            updateProjectTotalAmount(rec.projectId, totalAmount)
+                            updateProjectTotalAmount(totalAmount)
                             await reloadReceipts();
                         }}
                         onCancel={() => setEditingReceiptId(null)}

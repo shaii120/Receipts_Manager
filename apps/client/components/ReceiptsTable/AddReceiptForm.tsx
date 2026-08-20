@@ -44,11 +44,9 @@ function FormField({ placeholder, type = "text", register, label, errors, option
 
 function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
     const {
-        selectedProjectId,
-        projects,
+        selectedProject,
         updateProjectTotalAmount
     } = useProject();
-    const currentProject = projects.find(p => p.id === selectedProjectId);
 
     const {
         register,
@@ -62,9 +60,9 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
         defaultValues: {
             title: "",
             amount: 0,
-            currency: currentProject?.primaryCurrency ?? "USD",
+            currency: selectedProject?.primaryCurrency ?? "USD",
             vendor: null,
-            projectId: selectedProjectId!,
+            projectId: selectedProject!.id,
             boughtAt: new Date().toISOString().split('T')[0]
         },
     });
@@ -74,7 +72,7 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
         try {
             const result = await createReceipt(data);
 
-            updateProjectTotalAmount(data.projectId, result.totalAmount)
+            updateProjectTotalAmount(result.totalAmount)
             reset();
             onAdded?.();
         } catch (err) {
@@ -83,21 +81,13 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
     };
 
     return (
-        <form className={styles.form} onSubmit={handleSubmit(onSubmit)} key={selectedProjectId}>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)} key={selectedProject?.id}>
             <div className={styles.fieldsRow}>
                 <FormField label="title" placeholder="Title" register={register} errors={errors} />
                 <FormField label="amount" placeholder="Amount" type="number" register={register} errors={errors} />
-                <CurrencyField
-                    name="currency"
-                    control={control}
-                />
+                <CurrencyField name="currency" control={control} />
                 <FormField label="vendor" placeholder="Vendor (optional)" register={register} errors={errors} />
                 <FormField label="boughtAt" placeholder="Bought At" type="date" register={register} errors={errors} />
-                <select className={styles.input} {...register("projectId")}>
-                    {projects.map(p => (
-                        <option key={p.id} value={p.id}>{p.name}</option>
-                    ))}
-                </select>
 
                 <button className={styles.button} disabled={isSubmitting} type="submit">
                     {isSubmitting ? "Adding..." : "Add Receipt"}
@@ -115,11 +105,11 @@ function AddReceiptForm({ onAdded }: { onAdded?: () => void }) {
 }
 
 export default function AddReceiptFormWrapper({ onAdded }: { onAdded?: () => void }) {
-    const { selectedProjectId } = useProject()
+    const { selectedProject } = useProject()
 
-    if (!selectedProjectId) {
+    if (!selectedProject) {
         return <div>Please select project</div>
     }
 
-    return <AddReceiptForm key={selectedProjectId} onAdded={onAdded} />
+    return <AddReceiptForm key={selectedProject.id} onAdded={onAdded} />
 }

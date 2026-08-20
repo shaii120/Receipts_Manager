@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { GridList, GridListItem } from 'react-aria-components'
 import { useProject } from '@/context/ProjectContext'
 import CreateProjectDialog from '@/components/ProjectForm/CreateProjectDialog'
@@ -9,18 +9,16 @@ import styles from './ProjectSidebar.module.css'
 
 export function ProjectSidebar() {
     const {
-        selectedProjectId,
+        selectedProject,
         projects,
-        setSelectedProjectId,
-        loadProjects
+        canGoBack,
+        selectProject,
+        projectCreated,
+        goBack
     } = useProject()
 
     const [isCollapsed, setIsCollapsed] = useState(false)
     const [showCreateDialog, setShowCreateDialog] = useState(false)
-
-    useEffect(() => {
-        loadProjects()
-    }, [])
 
     const plusSign = `
         M 12 5
@@ -51,23 +49,40 @@ export function ProjectSidebar() {
                     Add New Project
                 </button>
 
+                {
+                    canGoBack
+                    && (
+                        <button
+                            type="button"
+                            onClick={goBack}
+                            className={styles.button}
+                        >
+                            Back
+                        </button>
+                    )}
+
                 <GridList
                     aria-label="Projects"
                     selectionMode="single"
-                    selectedKeys={selectedProjectId ? [selectedProjectId] : []}
+                    selectedKeys={selectedProject?.id ? [selectedProject.id] : []}
                     onSelectionChange={(keys) => {
                         const selectedKey = [...keys][0]
-                        setSelectedProjectId(selectedKey ? String(selectedKey) : null)
+                        const project = projects.find(
+                            project => project.id === String(selectedKey)
+                        )
+
+                        selectProject(project ?? null)
                     }}
                 >
-                    {projects.map(p => (
+                    {projects.map(project => (
                         <GridListItem
-                            key={p.id}
-                            id={p.id}
+                            key={project.id}
+                            id={project.id}
+                            textValue={project.name}
                             className={styles.item}
                         >
-                            <ProjectMenu project={p} />
-                            {p.name}
+                            <ProjectMenu project={project} />
+                            {project.name}
                         </GridListItem>
                     ))}
                 </GridList>
@@ -76,9 +91,9 @@ export function ProjectSidebar() {
             <CreateProjectDialog
                 open={showCreateDialog}
                 onClose={() => setShowCreateDialog(false)}
-                onCreated={(project) => {
-                    setSelectedProjectId(project.id)
-                    loadProjects()
+                onCreated={async (project) => {
+                    await projectCreated(project)
+                    setShowCreateDialog(false)
                 }}
             />
         </div>

@@ -12,6 +12,7 @@ import {
     type ProjectFormInput
 } from "@receipts/shared-schemas/project";
 import type { UserPublic } from "@receipts/shared-schemas/auth";
+import { useProject } from "@/context/ProjectContext"
 import CurrencyField from "@/components/CurrencyField/CurrencyField";
 import UserPicker from "@/components/UserPicker/UserPicker";
 import styles from "./ProjectForm.module.css";
@@ -29,12 +30,12 @@ export default function ProjectForm({
     onSubmit,
     onCancel
 }: ProjectFormProps) {
+    const { selectedProject } = useProject()
     const emptyProject: ProjectFormInput = {
         name: "",
         description: null,
-        primaryCurrency: "USD",
-        receiptsId: [],
-        usersId: []
+        primaryCurrency: selectedProject ? selectedProject.primaryCurrency : "USD",
+        users: []
     };
     const {
         register,
@@ -55,7 +56,7 @@ export default function ProjectForm({
     }
 
     async function handleFormSubmit(data: ProjectForm) {
-        data.usersId = selectedUsers.map(user => ({
+        data.users = selectedUsers.map(user => ({
             userId: user.id,
             role: "EDITOR"
         }));

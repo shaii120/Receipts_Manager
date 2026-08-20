@@ -30,7 +30,12 @@ export default function ProjectMenu({
     project
 }: ProjectMenuProps) {
     const { user } = useAuth();
-    const { loadProjects } = useProject();
+    const {
+        selectedProject,
+        selectProject,
+        refreshProjects,
+        goBack
+    } = useProject();
 
     const [viewing, setViewing] = useState(false);
     const [editing, setEditing] = useState(false);
@@ -57,8 +62,13 @@ export default function ProjectMenu({
 
             if (!confirmed) return;
 
+
+            if (selectedProject?.id === project.id)
+                await selectProject(null)
             await deleteProject(project.id);
-            await loadProjects();
+            const projects = await refreshProjects();
+            if (projects?.length === 0)
+                await goBack();
         },
         export: async () => {
             const receipts = await getReceipts(project.id);
@@ -89,7 +99,7 @@ export default function ProjectMenu({
                 onClose={() => setEditing(false)}
                 onUpdated={() => {
                     setEditing(false);
-                    loadProjects();
+                    refreshProjects();
                 }}
             />
         </>

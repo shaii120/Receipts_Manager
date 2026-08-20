@@ -1,5 +1,4 @@
 import type {
-    ProjectResult,
     ProjectUpdate
 } from '@receipts/shared-schemas/generated';
 import {
@@ -8,12 +7,21 @@ import {
 } from '@receipts/shared-schemas/project';
 import { apiFetch } from './api';
 
-export function getProjects() {
-    return apiFetch<ProjectResultCustom[]>('/api/projects')
+
+export function getProject(projectId: string) {
+    return apiFetch<ProjectResultCustom>(`/api/projects/${projectId}`)
+}
+
+export function getProjects(parentProjectId?: string | null) {
+    const query = parentProjectId
+        ? `?parentProjectId=${encodeURIComponent(parentProjectId)}`
+        : ''
+
+    return apiFetch<ProjectResultCustom[]>(`/api/projects${query}`)
 }
 
 export function createProject(data: ProjectForm) {
-    return apiFetch<ProjectResult>('/api/projects', {
+    return apiFetch<ProjectResultCustom>('/api/projects', {
         method: 'POST',
         body: JSON.stringify(data),
         headers: { 'Content-Type': 'application/json' },
@@ -21,7 +29,7 @@ export function createProject(data: ProjectForm) {
 }
 
 export function updateProject(id: string, updatedProject: ProjectUpdate) {
-    return apiFetch<ProjectResult>(`/api/projects/${id}`, {
+    return apiFetch<ProjectResultCustom>(`/api/projects/${id}`, {
         method: 'PUT',
         body: JSON.stringify(updatedProject),
         headers: { 'Content-Type': 'application/json' },
@@ -29,7 +37,7 @@ export function updateProject(id: string, updatedProject: ProjectUpdate) {
 }
 
 export function deleteProject(id: string) {
-    return apiFetch<ProjectResult>(`/api/projects/${id}`, {
+    return apiFetch<{ success: boolean }>(`/api/projects/${id}`, {
         method: 'DELETE',
     })
 }
