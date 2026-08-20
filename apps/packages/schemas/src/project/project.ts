@@ -7,13 +7,18 @@ import {
 } from "../index.js";
 import { UserPublicSchema } from "../auth/index.js"
 
-export const ProjectFormSchema = ProjectCreateSchema.extend({
-    usersId: z.array(
-        UserProjectModelSchema.omit({
-            projectId: true
-        })
-    )
-});
+export const ProjectFormSchema = ProjectCreateSchema
+    .omit({
+        childProjects: true,
+        receipts: true
+    })
+    .extend({
+        users: z.array(
+            UserProjectModelSchema.omit({
+                projectId: true
+            })
+        )
+    });
 export type ProjectFormInput = z.input<typeof ProjectFormSchema>;
 export type ProjectForm = z.output<typeof ProjectFormSchema>;
 
@@ -28,8 +33,9 @@ export const ProjectUserSchema = UserProjectModelSchema
 
 export const ProjectResultCustomSchema = ProjectModelSchema
     .omit({
-        receiptsId: true,
-        usersId: true
+        receipts: true,
+        users: true,
+        childProjects: true
     })
     .extend({
         users: z.array(ProjectUserSchema)

@@ -44,9 +44,13 @@ model Project {
   description     String?
   primaryCurrency String
   totalAmount     Decimal @default(0)
+  parentProjectId String?
 
   receipts Receipt[]
   users    UserProject[]
+
+  parentProject Project?  @relation("ProjectHierarchy", fields: [parentProjectId], references: [id])
+  childProjects Project[] @relation("ProjectHierarchy")
 }
 
 model UserProject {
